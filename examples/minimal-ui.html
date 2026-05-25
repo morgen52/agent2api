@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent2API Client</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        max-width: 840px;
+      }
+      textarea {
+        box-sizing: border-box;
+        min-height: 160px;
+        width: 100%;
+      }
+      button {
+        margin-top: 1rem;
+      }
+      pre {
+        background: #f4f4f4;
+        overflow: auto;
+        padding: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Agent2API Client</h1>
+    <textarea id="goal">Write a concise hello-world answer.</textarea>
+    <br />
+    <button id="run">Run Agent</button>
+    <pre id="output"></pre>
+    <script>
+      const output = document.querySelector("#output");
+      document.querySelector("#run").addEventListener("click", async () => {
+        output.textContent = "Running...";
+        const response = await fetch("http://127.0.0.1:3030/api/runs", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            task: { goal: document.querySelector("#goal").value },
+            options: { mode: "sync" }
+          })
+        });
+        output.textContent = JSON.stringify(await response.json(), null, 2);
+      });
+    </script>
+  </body>
+</html>

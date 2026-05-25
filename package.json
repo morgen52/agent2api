@@ -1,0 +1,42 @@
+{
+  "name": "agent2api",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Agent Task Protocol gateway for running local command-line agents behind an HTTP API.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/morgen52/agent2api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/morgen52/agent2api/issues"
+  },
+  "homepage": "https://github.com/morgen52/agent2api#readme",
+  "keywords": [
+    "agent",
+    "gateway",
+    "codex",
+    "task-protocol",
+    "automation",
+    "artifacts"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server/index.ts",
+    "start": "node dist/server/index.js",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "dependencies": {
+    "fastify": "^5.6.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

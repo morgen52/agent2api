@@ -1,0 +1,54 @@
+{
+  "apiVersion": "agent-service/v1",
+  "kind": "agent.task",
+  "agent": "codex",
+  "task": {
+    "goal": "Summarize the uploaded brief and create a short action plan.",
+    "mode": "execute",
+    "instructions": ["Return concise output."],
+    "acceptanceCriteria": ["Final answer summarizes the brief.", "Action plan is saved as a markdown artifact."],
+    "constraints": ["Use supplied context unless web access is explicitly enabled."]
+  },
+  "context": {
+    "files": [
+      {
+        "name": "brief.md",
+        "mimeType": "text/markdown",
+        "contentBase64": "IyBCcmllZgoKQnVpbGQgYSBsb2NhbCBhZ2VudCBzZXJ2aWNlIGdhdGV3YXkuCg=="
+      }
+    ],
+    "urls": [
+      {
+        "url": "https://example.com/context",
+        "label": "Optional context"
+      }
+    ],
+    "notes": []
+  },
+  "skills": [
+    {
+      "name": "technical-writing",
+      "description": "Turn source material into concise implementation notes.",
+      "required": false,
+      "inputs": {
+        "tone": "direct"
+      },
+      "permissions": ["read_context", "write_artifacts"]
+    }
+  ],
+  "deliverables": [
+    {
+      "name": "action-plan",
+      "type": "document",
+      "description": "Markdown action plan saved under result/artifacts/.",
+      "required": true,
+      "mimeTypes": ["text/markdown"]
+    }
+  ],
+  "options": {
+    "mode": "sync",
+    "timeoutMs": 300000,
+    "sandbox": "workspace-write",
+    "webSearch": false
+  }
+}
