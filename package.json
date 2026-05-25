@@ -49,6 +49,7 @@
     "start": "node dist/src/server/index.js",
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
     "build": "npm run clean && tsc -p tsconfig.json",
+    "check:examples": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext examples/sdk-client.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "tsx scripts/smoke.ts"

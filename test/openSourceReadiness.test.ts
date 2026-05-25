@@ -102,6 +102,7 @@ describe("open-source readiness", () => {
     const ci = await readText(".github/workflows/ci.yml");
     expect(ci).toContain("npm test");
     expect(ci).toContain("npm run build");
+    expect(ci).toContain("npm run check:examples");
     expect(ci).toContain("npm run smoke");
     expect(ci).toContain("npm audit --omit=dev");
   });
@@ -118,7 +119,8 @@ describe("open-source readiness", () => {
     expect(pkg.main).toBe("./dist/src/index.js");
     expect(pkg.types).toBe("./dist/src/index.d.ts");
     expect(pkg.scripts).toMatchObject({
-      start: "node dist/src/server/index.js"
+      start: "node dist/src/server/index.js",
+      "check:examples": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext examples/sdk-client.ts"
     });
     expect(pkg.exports).toMatchObject({
       ".": {

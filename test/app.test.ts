@@ -87,6 +87,77 @@ describe("HTTP API", () => {
     await app.close();
   });
 
+  test("GET /api/runs/:id/events stays open for async runs and streams completion", async () => {
+    const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
+    const releaseRun = deferred<void>();
+    const app = await buildApp({
+      baseDir,
+      runAgent: async ({ workspace, events }) => {
+        events.stdout("started\n");
+        await releaseRun.promise;
+        await mkdir(path.join(workspace.rootDir, "result", "artifacts"), { recursive: true });
+        await writeFile(path.join(workspace.rootDir, "result", "answer.md"), "Async answer", "utf8");
+        return { exitCode: 0, stdout: "started\n", stderr: "" };
+      }
+    });
+
+    const runResponse = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        task: { goal: "Create async notes." },
+        options: { mode: "async" }
+      }
+    });
+    const run = runResponse.json();
+    expect(runResponse.statusCode).toBe(202);
+    expect(run.status).toBe("running");
+
+    const eventsPromise = app.inject({ method: "GET", url: `/api/runs/${run.runId}/events` });
+    await new Promise((resolve) => setImmediate(resolve));
+    releaseRun.resolve();
+    const eventsResponse = await eventsPromise;
+
+    expect(eventsResponse.statusCode).toBe(200);
+    expect(eventsResponse.payload).toContain("event: run.started");
+    expect(eventsResponse.payload).toContain("event: stdout.delta");
+    expect(eventsResponse.payload).toContain("event: run.completed");
+
+    await app.close();
+  });
+
+  test("GET /api/runs/:id/events returns failed lifecycle events", async () => {
+    const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
+    const app = await buildApp({
+      baseDir,
+      runAgent: async ({ events }) => {
+        events.stderr("bad runtime\n");
+        return { exitCode: 2, stdout: "", stderr: "bad runtime" };
+      }
+    });
+
+    const runResponse = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        task: { goal: "Fail clearly." }
+      }
+    });
+    const run = runResponse.json();
+    expect(runResponse.statusCode).toBe(502);
+    expect(run.status).toBe("failed");
+
+    const eventsResponse = await app.inject({ method: "GET", url: `/api/runs/${run.runId}/events` });
+
+    expect(eventsResponse.statusCode).toBe(200);
+    expect(eventsResponse.payload).toContain("event: run.started");
+    expect(eventsResponse.payload).toContain("event: stderr.delta");
+    expect(eventsResponse.payload).toContain("event: run.failed");
+    expect(eventsResponse.payload).toContain("bad runtime");
+
+    await app.close();
+  });
+
   test("GET /api/runs/:id/artifacts/* downloads artifact content", async () => {
     const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
     const app = await buildApp({
@@ -116,6 +187,41 @@ describe("HTTP API", () => {
     expect(artifactResponse.statusCode).toBe(200);
     expect(artifactResponse.headers["content-type"]).toContain("text/markdown");
     expect(artifactResponse.payload).toBe("Notes");
+
+    await app.close();
+  });
+
+  test("artifact URLs preserve nested paths and URL-encoded file names", async () => {
+    const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
+    const app = await buildApp({
+      baseDir,
+      runAgent: async ({ workspace }) => {
+        await mkdir(path.join(workspace.rootDir, "result", "artifacts", "nested"), { recursive: true });
+        await writeFile(path.join(workspace.rootDir, "result", "answer.md"), "Agent answer", "utf8");
+        await writeFile(path.join(workspace.rootDir, "result", "artifacts", "nested", "report 1.md"), "Nested notes", "utf8");
+        return { exitCode: 0, stdout: "", stderr: "" };
+      }
+    });
+
+    const runResponse = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        task: { goal: "Create nested artifact." }
+      }
+    });
+    const run = runResponse.json();
+
+    expect(run.artifacts[0].path).toBe("artifacts/nested/report 1.md");
+    expect(run.artifacts[0].url).toMatch(/nested\/report%201\.md$/);
+
+    const artifactResponse = await app.inject({
+      method: "GET",
+      url: run.artifacts[0].url
+    });
+
+    expect(artifactResponse.statusCode).toBe(200);
+    expect(artifactResponse.payload).toBe("Nested notes");
 
     await app.close();
   });
@@ -154,3 +260,13 @@ describe("HTTP API", () => {
     await app.close();
   });
 });
+
+function deferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((promiseResolve, promiseReject) => {
+    resolve = promiseResolve;
+    reject = promiseReject;
+  });
+  return { promise, resolve, reject };
+}

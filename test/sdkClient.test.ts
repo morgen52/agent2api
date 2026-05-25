@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { Agent2APIClient } from "../src/sdk/client.js";
+import { Agent2APIClient, Agent2APIError } from "../src/sdk/client.js";
 import type { AgentRunRequestInput } from "../src/contract/requestSchema.js";
 
 describe("Agent2APIClient", () => {
@@ -63,6 +63,47 @@ describe("Agent2APIClient", () => {
     expect(calls).toEqual(["http://127.0.0.1:3030/api/runs/run_1/artifacts/draft.md"]);
   });
 
+  test("builds artifact download URLs from run id and artifact path", async () => {
+    const calls: string[] = [];
+    const client = new Agent2APIClient({
+      baseUrl: "http://127.0.0.1:3030",
+      fetch: async (url) => {
+        calls.push(String(url));
+        return new Response("Nested content", { status: 200, headers: { "content-type": "text/markdown" } });
+      }
+    });
+
+    const text = await client.downloadArtifactText(
+      {
+        name: "report 1.md",
+        path: "artifacts/nested/report 1.md",
+        sizeBytes: 14,
+        mimeType: "text/markdown"
+      },
+      { runId: "run_1" }
+    );
+
+    expect(text).toBe("Nested content");
+    expect(calls).toEqual(["http://127.0.0.1:3030/api/runs/run_1/artifacts/nested/report%201.md"]);
+  });
+
+  test("throws typed errors for non-2xx responses", async () => {
+    const client = new Agent2APIClient({
+      baseUrl: "http://127.0.0.1:3030",
+      fetch: async () =>
+        new Response(JSON.stringify({ error: { code: "not_found", message: "Run not found" } }), {
+          status: 404,
+          headers: { "content-type": "application/json" }
+        })
+    });
+
+    await expect(client.getRun("missing")).rejects.toMatchObject({
+      name: "Agent2APIError",
+      status: 404,
+      details: { error: { code: "not_found", message: "Run not found" } }
+    } satisfies Partial<Agent2APIError>);
+  });
+
   test("streams run events from the SSE endpoint", async () => {
     const client = new Agent2APIClient({
       baseUrl: "http://127.0.0.1:3030",
@@ -92,6 +133,34 @@ describe("Agent2APIClient", () => {
     expect(events).toEqual([
       { id: "1", type: "run.started", data: { runId: "run_1", status: "running" } },
       { id: "2", type: "run.completed", data: { runId: "run_1", status: "completed" } }
+    ]);
+  });
+
+  test("parses SSE frames split across response chunks", async () => {
+    const client = new Agent2APIClient({
+      baseUrl: "http://127.0.0.1:3030",
+      fetch: async () =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              const encoder = new TextEncoder();
+              controller.enqueue(encoder.encode('id: 1\nevent: stdout.delta\ndata: {"text":"hel'));
+              controller.enqueue(encoder.encode('lo"}\n\nid: 2\nevent: run.completed\ndata: {"status":"completed"}\n\n'));
+              controller.close();
+            }
+          }),
+          { status: 200, headers: { "content-type": "text/event-stream" } }
+        )
+    });
+
+    const events = [];
+    for await (const event of client.streamRunEvents("run_1")) {
+      events.push(event);
+    }
+
+    expect(events).toEqual([
+      { id: "1", type: "stdout.delta", data: { text: "hello" } },
+      { id: "2", type: "run.completed", data: { status: "completed" } }
     ]);
   });
 });
