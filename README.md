@@ -1,39 +1,67 @@
 # Agent2API
 
-![Node.js](https://img.shields.io/badge/node-22%2B-339933)
-![Protocol](https://img.shields.io/badge/protocol-agent--service%2Fv1-1f6feb)
-![License](https://img.shields.io/badge/license-MIT-blue)
+<div align="center">
+  <img src="assets/logo.png" alt="Agent2API logo" width="180" />
+  <p><strong>Agent2API turns agent runtimes into a clean HTTP API.</strong></p>
+  <p>
+    Build your own UI once, then run it against Codex CLI today and other agent runtimes tomorrow.
+  </p>
+  <p>
+    <a href="#quick-start"><strong>Quick Start</strong></a>
+    |
+    <a href="#usage"><strong>Usage</strong></a>
+    |
+    <a href="docs/protocol.md"><strong>Protocol</strong></a>
+    |
+    <a href="docs/api.md"><strong>API Docs</strong></a>
+    |
+    <a href="#contributing"><strong>Contributing</strong></a>
+  </p>
+  <p>
+    <img alt="Node.js" src="https://img.shields.io/badge/node-22%2B-339933" />
+    <img alt="Protocol" src="https://img.shields.io/badge/protocol-agent--service%2Fv1-1f6feb" />
+    <img alt="License" src="https://img.shields.io/badge/license-MIT-blue" />
+    <img alt="Status" src="https://img.shields.io/badge/status-alpha-f59e0b" />
+  </p>
+</div>
 
-Agent2API turns agent runtimes into a clean HTTP API.
+<p align="center">
+  <img src="assets/product.png" alt="Agent2API product overview" />
+</p>
 
 ## Summary
 
-Agent2API lets a custom UI call a local agent runtime, starting with Codex CLI, without coupling that UI to Codex prompts, terminal sessions, or filesystem conventions.
+Agent2API is a developer-first HTTP layer for running agent work from any frontend, local app, or automation. It accepts a stable task contract, prepares an isolated workspace, calls an agent runtime through an adapter, and returns a structured answer plus artifact metadata.
 
 The public API is intentionally agent-level:
 
-- `task`: what the agent should accomplish.
-- `context`: files, URL references, and notes supplied by the caller.
-- `skills`: requested workflows or capabilities, not LLM function calls.
-- `deliverables`: expected files under `result/artifacts/`.
-- `options`: execution controls such as sync/async, timeout, sandbox, and web search.
+| Field | Meaning |
+| --- | --- |
+| `task` | What the agent should accomplish. |
+| `context` | Files, URL references, and notes supplied by the caller. |
+| `skills` | Requested workflows or capabilities, not LLM function calls. |
+| `deliverables` | Expected files under `result/artifacts/`. |
+| `options` | Execution controls such as sync/async, timeout, sandbox, and web search. |
 
-The server creates a per-run workspace, writes request context to disk, renders a command for the selected adapter, runs the agent, and returns the answer plus artifact metadata.
+The first adapter is `codex-cli`. The protocol does not expose LLM messages, function calling, temperature, token budgets, or provider-specific tool schemas. Those details stay behind adapters.
 
 ## Motivation
 
-Most AI APIs are model-level: they expose messages, tokens, tools, sampling options, and provider-specific response shapes. That is the wrong abstraction for a product UI that wants to ask an agent to complete work.
+Most AI APIs are model-level: they expose messages, tokens, tools, sampling options, and provider-specific response shapes. That is the wrong abstraction for a product UI that wants an agent to complete work.
 
-This project draws a harder line:
+Agent2API draws a clean boundary:
 
-- Frontends describe work as tasks and deliverables.
-- Agent runtimes decide how to execute that work.
-- Adapters translate the stable task contract into Codex CLI, Claude Code, hosted agents, or future runtimes.
-- Artifacts are first-class outputs, not an afterthought buried in text.
+| Frontend owns | Agent2API owns | Runtime owns |
+| --- | --- | --- |
+| Product UI, user inputs, uploads, result display | Request validation, workspace setup, adapter invocation, artifact collection | Planning, tool use, editing, synthesis, execution |
 
-The goal is to make the API small enough for a solo developer to run locally and stable enough for other agent backends to follow.
+This gives application developers a simple contract: describe the work and expected outputs, then let the selected runtime execute it. A custom HTML page, React app, internal dashboard, or desktop app can all call the same endpoint.
 
 ## Design
+
+<p align="center">
+  <img src="assets/details.png" alt="How Agent2API works" />
+</p>
 
 ```mermaid
 flowchart LR
@@ -50,7 +78,7 @@ flowchart LR
 ```mermaid
 sequenceDiagram
   participant UI as Frontend
-  participant API as Gateway API
+  participant API as Agent2API
   participant FS as Run Workspace
   participant AD as Adapter
   participant AG as Agent Runtime
@@ -78,7 +106,7 @@ stateDiagram-v2
   canceled --> [*]
 ```
 
-The first adapter is `codex-cli`. The public protocol does not expose LLM messages, function calling, temperature, or provider-specific tool formats. Adapter-specific controls belong in `adapterOptions` or in adapter implementation code.
+Every run gets its own workspace. Inputs are persisted as files, the adapter renders a runtime-specific command, and outputs are collected from `result/answer.md` plus `result/artifacts/`.
 
 ## Quick Start
 
@@ -200,7 +228,9 @@ export interface AgentAdapter {
 
 Current adapter:
 
-- `codex-cli`: renders `command.md`, runs `codex exec`, and collects `result/answer.md` plus `result/artifacts/`.
+| Adapter | Runtime | Behavior |
+| --- | --- | --- |
+| `codex-cli` | Codex CLI | Renders `command.md`, runs `codex exec`, and collects `result/answer.md` plus `result/artifacts/`. |
 
 Good future adapters:
 
@@ -235,6 +265,7 @@ src/
 schemas/             Public JSON Schema
 docs/                Protocol, API, and architecture docs
 examples/            Example request and tiny HTML client
+assets/              README images and project visuals
 test/                Contract, adapter, workspace, runner, and readiness tests
 ```
 
