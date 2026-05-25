@@ -52,6 +52,29 @@ describe("codex runner", () => {
     expect(calls[0]?.stdin).toBe("Do the work.");
   });
 
+  test("forwards process output chunks to runtime event callbacks", async () => {
+    const chunks: string[] = [];
+
+    await runCodexAgent({
+      workspaceDir: path.resolve("/tmp/run"),
+      commandPath: path.resolve("fixtures/command.md"),
+      answerPath: path.resolve("/tmp/run/result/answer.md"),
+      timeoutMs: 1_000,
+      executor: async (_command, _args, options) => {
+        options.onStdout?.("working\n");
+        options.onStderr?.("warning\n");
+        return { exitCode: 0, stdout: "working\n", stderr: "warning\n" };
+      },
+      events: {
+        stdout: (chunk) => chunks.push(`stdout:${chunk}`),
+        stderr: (chunk) => chunks.push(`stderr:${chunk}`)
+      },
+      readCommand: async () => "Do the work."
+    });
+
+    expect(chunks).toEqual(["stdout:working\n", "stderr:warning\n"]);
+  });
+
   test("rejects with a timeout error when codex does not finish in time", async () => {
     await expect(
       runCodexAgent({

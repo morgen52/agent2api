@@ -120,7 +120,8 @@ export type MaterialUrl = z.infer<typeof MaterialUrlSchema>;
 export type ArtifactSpec = z.infer<typeof ArtifactSpecSchema>;
 export type TaskSpec = z.infer<typeof TaskSpecSchema>;
 export type SkillSpec = z.infer<typeof SkillSpecSchema>;
-export type AgentRunRequest = z.infer<typeof AgentRunRequestSchema>;
+export type AgentRunRequest = z.output<typeof AgentRunRequestSchema>;
+export type AgentRunRequestInput = z.input<typeof AgentRunRequestSchema>;
 
 export function parseAgentRunRequest(input: unknown): AgentRunRequest {
   return AgentRunRequestSchema.parse(input);

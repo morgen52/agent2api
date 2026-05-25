@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart LR
-  UI["Custom HTML/UI"] --> API["POST /api/runs"]
+  UI["Custom HTML/UI or SDK"] --> API["POST /api/runs"]
   API --> Contract["Zod request contract"]
   Contract --> Workspace["Per-run workspace"]
   Workspace --> Adapter["AgentAdapter"]
@@ -12,7 +12,10 @@ flowchart LR
   Command --> Codex["codex exec"]
   Codex --> Result["result/answer.md + artifacts/"]
   Result --> API
-  API --> UI
+  API --> Download["artifact downloads"]
+  API --> Events["SSE events"]
+  Download --> UI
+  Events --> UI
 ```
 
 ## Boundaries
@@ -23,14 +26,20 @@ The workspace layer is the handoff contract between HTTP callers and the agent r
 
 The adapter layer owns runtime-specific behavior. `CodexCliAdapter` is the first implementation and delegates process execution to the runner layer.
 
-The runner layer owns command-line details, including `codex exec` arguments, stdin prompt delivery, timeout handling, and process output.
+The runner layer owns command-line details, including `codex exec` arguments, stdin prompt delivery, timeout handling, and process output. Runtime stdout and stderr are forwarded into the run event stream when the adapter supports it.
+
+The SDK layer is intentionally thin. It wraps the public HTTP API for UI clients and provides helpers for creating runs, polling status, streaming SSE events, and downloading artifacts.
 
 ## Adapter Interface
 
 ```ts
 export interface AgentAdapter {
   capabilities(): AgentAdapterCapabilities;
-  run(input: { request: AgentRunRequest; workspace: RunWorkspace }): Promise<ProcessResult>;
+  run(input: {
+    request: AgentRunRequest;
+    workspace: RunWorkspace;
+    events?: ProcessEvents;
+  }): Promise<ProcessResult>;
 }
 ```
 
@@ -45,6 +54,7 @@ URL fetching needs SSRF rules, auth handling, content limits, robots/copyright p
 - Add API keys or session auth.
 - Add per-user run quotas, file size limits, and total disk caps.
 - Move run records from memory to SQLite/Postgres.
+- Persist run events for replay after server restart.
 - Add a queue and concurrency limits.
 - Run agents inside a stronger OS sandbox or container.
 - Add URL fetch allowlists before server-side crawling.

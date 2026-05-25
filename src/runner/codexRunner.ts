@@ -19,10 +19,15 @@ export type ProcessResult = {
   stderr: string;
 };
 
+export type ProcessEvents = {
+  stdout?: (chunk: string) => void;
+  stderr?: (chunk: string) => void;
+};
+
 export type ProcessExecutor = (
   command: string,
   args: string[],
-  options: { cwd: string; stdin: string; signal: AbortSignal }
+  options: { cwd: string; stdin: string; signal: AbortSignal; onStdout?: (chunk: string) => void; onStderr?: (chunk: string) => void }
 ) => Promise<ProcessResult>;
 
 export class AgentRunTimeoutError extends Error {
@@ -63,6 +68,7 @@ export function buildCodexExecArgs(input: CodexExecArgsInput): string[] {
 export async function runCodexAgent(input: CodexExecArgsInput & {
   timeoutMs: number;
   executor?: ProcessExecutor;
+  events?: ProcessEvents;
   readCommand?: (commandPath: string) => Promise<string>;
 }): Promise<ProcessResult> {
   const commandMarkdown = await (input.readCommand ?? readCommandFile)(input.commandPath);
@@ -76,7 +82,9 @@ export async function runCodexAgent(input: CodexExecArgsInput & {
       executor("codex", args, {
         cwd: input.workspaceDir,
         stdin: commandMarkdown,
-        signal: controller.signal
+        signal: controller.signal,
+        onStdout: input.events?.stdout,
+        onStderr: input.events?.stderr
       }),
       new Promise<ProcessResult>((_, reject) => {
         timeout = setTimeout(() => {
@@ -106,8 +114,14 @@ const spawnExecutor: ProcessExecutor = (command, args, options) =>
     const stdout: Buffer[] = [];
     const stderr: Buffer[] = [];
 
-    child.stdout.on("data", (chunk: Buffer) => stdout.push(chunk));
-    child.stderr.on("data", (chunk: Buffer) => stderr.push(chunk));
+    child.stdout.on("data", (chunk: Buffer) => {
+      stdout.push(chunk);
+      options.onStdout?.(chunk.toString("utf8"));
+    });
+    child.stderr.on("data", (chunk: Buffer) => {
+      stderr.push(chunk);
+      options.onStderr?.(chunk.toString("utf8"));
+    });
     child.on("error", reject);
     child.on("close", (code) => {
       resolve({

@@ -51,6 +51,7 @@ describe("open-source readiness", () => {
     for (const heading of [
       "## Summary",
       "## Motivation",
+      "## Feature Support Matrix",
       "## Design",
       "## Quick Start",
       "## Usage",
@@ -68,6 +69,14 @@ describe("open-source readiness", () => {
     expect(readme).toContain("context");
     expect(readme).toContain("skills");
     expect(readme).toContain("deliverables");
+    expect(readme).toContain("Implemented");
+    expect(readme).toContain("Partial");
+    expect(readme).toContain("Planned");
+    expect(readme).toContain("Not implemented");
+    expect(readme).toContain("Artifact download");
+    expect(readme).toContain("SSE progress streaming");
+    expect(readme).toContain("Persistent run store");
+    expect(readme).toContain("Roadmap items are planned work, not current features.");
   });
 
   test("repository includes standard open-source governance and CI files", async () => {
@@ -76,8 +85,13 @@ describe("open-source readiness", () => {
       "CONTRIBUTING.md",
       "SECURITY.md",
       "CODE_OF_CONDUCT.md",
+      "CHANGELOG.md",
       ".env.example",
-      ".github/workflows/ci.yml"
+      ".github/workflows/ci.yml",
+      ".github/pull_request_template.md",
+      ".github/ISSUE_TEMPLATE/bug_report.md",
+      ".github/ISSUE_TEMPLATE/feature_request.md",
+      "examples/sdk-client.ts"
     ];
 
     for (const file of requiredFiles) {
@@ -94,12 +108,29 @@ describe("open-source readiness", () => {
 
   test("package metadata is publishable as an open-source package", async () => {
     const pkg = (await readJson("package.json")) as Record<string, unknown>;
+    const tsconfig = (await readJson("tsconfig.json")) as { compilerOptions?: Record<string, unknown> };
 
     expect(pkg.private).toBe(false);
     expect(pkg.license).toBe("MIT");
     expect(pkg.description).toEqual(expect.stringContaining("Agent Task"));
     expect(pkg.repository).toMatchObject({ type: "git" });
     expect(pkg.keywords).toEqual(expect.arrayContaining(["agent", "gateway", "codex"]));
+    expect(pkg.main).toBe("./dist/src/index.js");
+    expect(pkg.types).toBe("./dist/src/index.d.ts");
+    expect(pkg.scripts).toMatchObject({
+      start: "node dist/src/server/index.js"
+    });
+    expect(pkg.exports).toMatchObject({
+      ".": {
+        types: "./dist/src/index.d.ts",
+        import: "./dist/src/index.js"
+      },
+      "./sdk": {
+        types: "./dist/src/sdk/client.d.ts",
+        import: "./dist/src/sdk/client.js"
+      }
+    });
+    expect(tsconfig.compilerOptions?.declaration).toBe(true);
   });
 
   test("repository does not include workspace process artifacts", async () => {

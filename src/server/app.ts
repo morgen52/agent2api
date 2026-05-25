@@ -1,16 +1,25 @@
 import fastify, { type FastifyInstance } from "fastify";
 import { createReadStream } from "node:fs";
 import path from "node:path";
+import { PassThrough } from "node:stream";
 import { ZodError } from "zod";
 
 import { CodexCliAdapter } from "../adapters/codex/CodexCliAdapter.js";
 import type { AgentAdapter } from "../adapters/types.js";
 import { type AgentRunRequest, parseAgentRunRequest } from "../contract/requestSchema.js";
-import { type ProcessResult } from "../runner/codexRunner.js";
+import { type ProcessEvents, type ProcessResult } from "../runner/codexRunner.js";
 import { collectRunResult, type AgentRunResult } from "../runner/resultCollector.js";
 import { prepareRunWorkspace, type RunWorkspace } from "../workspace/workspace.js";
 
 type RunStatus = "running" | "completed" | "failed";
+type RunEventType = "run.started" | "stdout.delta" | "stderr.delta" | "artifact.created" | "run.completed" | "run.failed";
+
+type RunEvent = {
+  id: number;
+  type: RunEventType;
+  createdAt: string;
+  data: unknown;
+};
 
 type RunRecord = {
   runId: string;
@@ -22,9 +31,16 @@ type RunRecord = {
   process?: ProcessResult;
   result?: AgentRunResult;
   error?: string;
+  events: RunEvent[];
+  eventListeners: Set<(event: RunEvent) => void>;
+  nextEventId: number;
 };
 
-export type AgentRunner = (context: { request: AgentRunRequest; workspace: RunWorkspace }) => Promise<ProcessResult>;
+export type AgentRunner = (context: {
+  request: AgentRunRequest;
+  workspace: RunWorkspace;
+  events: Required<ProcessEvents>;
+}) => Promise<ProcessResult>;
 
 export type BuildAppOptions = {
   baseDir: string;
@@ -76,9 +92,13 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
       request: parsed,
       workspace,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      events: [],
+      eventListeners: new Set(),
+      nextEventId: 1
     };
     records.set(record.runId, record);
+    emitRunEvent(record, "run.started", { status: record.status });
 
     if (parsed.options.mode === "async") {
       void executeRun(record, runAgent);
@@ -95,6 +115,43 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
       return reply.code(404).send({ error: { code: "not_found", message: "Run not found" } });
     }
     return toRunResponse(record);
+  });
+
+  app.get<{ Params: { id: string } }>("/api/runs/:id/events", async (request, reply) => {
+    const record = records.get(request.params.id);
+    if (!record) {
+      return reply.code(404).send({ error: { code: "not_found", message: "Run not found" } });
+    }
+
+    const stream = new PassThrough();
+    reply.header("content-type", "text/event-stream; charset=utf-8");
+    reply.header("cache-control", "no-cache, no-transform");
+    reply.header("connection", "keep-alive");
+
+    for (const event of record.events) {
+      stream.write(formatSseEvent(event));
+    }
+
+    if (record.status !== "running") {
+      stream.end();
+      return reply.send(stream);
+    }
+
+    const listener = (event: RunEvent) => {
+      stream.write(formatSseEvent(event));
+      if (event.type === "run.completed" || event.type === "run.failed") {
+        record.eventListeners.delete(listener);
+        stream.end();
+      }
+    };
+
+    record.eventListeners.add(listener);
+    request.raw.on("close", () => {
+      record.eventListeners.delete(listener);
+      stream.end();
+    });
+
+    return reply.send(stream);
   });
 
   app.get<{ Params: { id: string; "*": string } }>("/api/runs/:id/artifacts/*", async (request, reply) => {
@@ -118,20 +175,36 @@ export async function buildApp(options: BuildAppOptions): Promise<FastifyInstanc
 
 async function executeRun(record: RunRecord, runAgent: AgentRunner): Promise<void> {
   try {
-    const process = await runAgent({ request: record.request, workspace: record.workspace });
+    const process = await runAgent({
+      request: record.request,
+      workspace: record.workspace,
+      events: {
+        stdout: (chunk) => emitRunEvent(record, "stdout.delta", { text: chunk }),
+        stderr: (chunk) => emitRunEvent(record, "stderr.delta", { text: chunk })
+      }
+    });
     record.process = process;
 
     if (process.exitCode !== 0) {
       record.status = "failed";
       record.error = process.stderr || `Agent process exited with code ${process.exitCode}`;
+      emitRunEvent(record, "run.failed", { status: record.status, error: record.error });
       return;
     }
 
     record.result = addArtifactUrls(await collectRunResult({ runId: record.runId, rootDir: record.workspace.rootDir }), record.runId);
+    for (const artifact of record.result.artifacts) {
+      emitRunEvent(record, "artifact.created", artifact);
+    }
     record.status = "completed";
+    emitRunEvent(record, "run.completed", {
+      status: record.status,
+      artifactCount: record.result.artifacts.length
+    });
   } catch (error) {
     record.status = "failed";
     record.error = error instanceof Error ? error.message : String(error);
+    emitRunEvent(record, "run.failed", { status: record.status, error: record.error });
   } finally {
     record.updatedAt = new Date().toISOString();
   }
@@ -153,12 +226,39 @@ function toRunResponse(record: RunRecord) {
     status: record.status,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    pollUrl: `/api/runs/${record.runId}`,
+    eventsUrl: `/api/runs/${record.runId}/events`,
     workspacePath: record.workspace.rootDir,
     answer: record.result?.answer ?? "",
     artifacts: record.result?.artifacts ?? [],
     process: record.process,
     error: record.error
   };
+}
+
+function emitRunEvent(record: RunRecord, type: RunEventType, data: unknown): void {
+  const event: RunEvent = {
+    id: record.nextEventId,
+    type,
+    createdAt: new Date().toISOString(),
+    data: {
+      runId: record.runId,
+      ...toObject(data)
+    }
+  };
+  record.nextEventId += 1;
+  record.events.push(event);
+  for (const listener of record.eventListeners) {
+    listener(event);
+  }
+}
+
+function formatSseEvent(event: RunEvent): string {
+  return [`id: ${event.id}`, `event: ${event.type}`, `data: ${JSON.stringify(event.data)}`, ""].join("\n") + "\n";
+}
+
+function toObject(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : { value };
 }
 
 function formatValidationError(error: unknown) {

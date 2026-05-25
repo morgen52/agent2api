@@ -11,6 +11,8 @@
     |
     <a href="#usage"><strong>Usage</strong></a>
     |
+    <a href="#feature-support-matrix"><strong>Support Matrix</strong></a>
+    |
     <a href="docs/protocol.md"><strong>Protocol</strong></a>
     |
     <a href="docs/api.md"><strong>API Docs</strong></a>
@@ -56,6 +58,26 @@ Agent2API draws a clean boundary:
 | Product UI, user inputs, uploads, result display | Request validation, workspace setup, adapter invocation, artifact collection | Planning, tool use, editing, synthesis, execution |
 
 This gives application developers a simple contract: describe the work and expected outputs, then let the selected runtime execute it. A custom HTML page, React app, internal dashboard, or desktop app can all call the same endpoint.
+
+## Feature Support Matrix
+
+Roadmap items are planned work, not current features. This table is the source of truth for what the current package supports.
+
+| Capability | Status | Notes |
+| --- | --- | --- |
+| Agent Task Protocol | Implemented | Stable JSON request shape for `task`, `context`, `skills`, `deliverables`, and `options`. |
+| Sync runs | Implemented | `POST /api/runs` waits for completion when `options.mode` is `sync`. |
+| Async runs and polling | Implemented | `POST /api/runs` returns `202`; clients poll `GET /api/runs/:id`. |
+| Artifact download | Implemented | Returned artifacts include `url`; clients download through `GET /api/runs/:id/artifacts/*`. |
+| SSE progress streaming | Partial | `GET /api/runs/:id/events` streams lifecycle, stdout, stderr, and artifact events. Durable replay after server restart is not implemented. |
+| JS/TS SDK | Implemented | `agent2api/sdk` exposes `createRun`, `getRun`, `downloadArtifact`, `downloadArtifactText`, and `streamRunEvents`. |
+| JSON file context | Implemented | Request files can use `text` or `contentBase64`. |
+| URL context | Partial | URLs are recorded for the agent; the server does not fetch remote pages in v1. |
+| Codex CLI adapter | Implemented | Runs local `codex exec` through the adapter boundary. |
+| Persistent run store | Planned | Current run records are in memory; files remain on disk but run metadata is not restored after restart. |
+| Cancel API | Not implemented | Planned as `POST /api/runs/:id/cancel`. |
+| Multipart uploads | Planned | Current upload path is JSON-only. |
+| Additional runtime adapters | Planned | Candidate adapters include Claude Code CLI, OpenAI Agents SDK, and remote HTTP agents. |
 
 ## Design
 
@@ -197,11 +219,14 @@ Response shape:
 {
   "runId": "run_mplcl8p2_ec9a2605",
   "status": "completed",
+  "pollUrl": "/api/runs/run_mplcl8p2_ec9a2605",
+  "eventsUrl": "/api/runs/run_mplcl8p2_ec9a2605/events",
   "answer": "Agent answer text",
   "artifacts": [
     {
       "name": "action-plan.md",
       "path": "artifacts/action-plan.md",
+      "sizeBytes": 1234,
       "mimeType": "text/markdown",
       "url": "/api/runs/run_mplcl8p2_ec9a2605/artifacts/action-plan.md"
     }
@@ -213,6 +238,47 @@ Open `examples/minimal-ui.html` for a tiny browser client. If the UI runs on ano
 
 ```bash
 CORS_ORIGIN=http://127.0.0.1:5173 npm run dev
+```
+
+### JS/TS SDK
+
+Use the SDK from browser or Node clients that can reach the Agent2API server:
+
+```ts
+import { Agent2APIClient } from "agent2api/sdk";
+
+const client = new Agent2APIClient({
+  baseUrl: "http://127.0.0.1:3030"
+});
+
+const run = await client.createRun({
+  task: { goal: "Summarize the brief and create an action plan." },
+  context: {
+    files: [{ name: "brief.md", mimeType: "text/markdown", text: "# Brief" }],
+    urls: [],
+    notes: []
+  },
+  deliverables: [
+    {
+      name: "action-plan",
+      type: "document",
+      description: "Markdown action plan.",
+      required: true,
+      mimeTypes: ["text/markdown"]
+    }
+  ],
+  options: { mode: "async" }
+});
+
+for await (const event of client.streamRunEvents(run.runId)) {
+  console.log(event.type, event.data);
+}
+
+const completed = await client.getRun(run.runId);
+if (completed.artifacts[0]) {
+  const artifactText = await client.downloadArtifactText(completed.artifacts[0]);
+  console.log(artifactText);
+}
 ```
 
 ## Adapter Model
@@ -266,19 +332,32 @@ schemas/             Public JSON Schema
 docs/                Protocol, API, and architecture docs
 examples/            Example request and tiny HTML client
 assets/              README images and project visuals
+src/sdk/             Browser and Node client SDK
 test/                Contract, adapter, workspace, runner, and readiness tests
 ```
 
 ## Roadmap
 
+Roadmap items are planned work, not current features.
+
+Near-term:
+
 - Persistent run store with SQLite.
+- Cancel API for running tasks.
 - Queue and concurrency limits.
-- Cancel API and run lifecycle events.
-- Server-sent events for progress streaming.
 - Multipart browser uploads.
-- Adapter authoring guide with a second runtime adapter.
+
+Adapter ecosystem:
+
+- Adapter authoring guide.
+- Second runtime adapter.
 - Skill manifest format and local skill registry.
+
+Deployment hardening:
+
 - Optional authenticated deployment mode.
+- Artifact retention policy.
+- Structured audit logs.
 
 ## Contributing
 

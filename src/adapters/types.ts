@@ -1,5 +1,5 @@
 import type { AgentRunRequest } from "../contract/requestSchema.js";
-import type { ProcessResult } from "../runner/codexRunner.js";
+import type { ProcessEvents, ProcessResult } from "../runner/codexRunner.js";
 import type { RunWorkspace } from "../workspace/workspace.js";
 
 export type AgentAdapterCapabilities = {
@@ -11,6 +11,7 @@ export type AgentAdapterCapabilities = {
 export type AgentAdapterRunInput = {
   request: AgentRunRequest;
   workspace: RunWorkspace;
+  events?: ProcessEvents;
 };
 
 export interface AgentAdapter {

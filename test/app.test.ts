@@ -52,6 +52,74 @@ describe("HTTP API", () => {
     await app.close();
   });
 
+  test("GET /api/runs/:id/events returns SSE lifecycle and output events", async () => {
+    const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
+    const app = await buildApp({
+      baseDir,
+      runAgent: async ({ workspace, events }) => {
+        events.stdout("working\n");
+        await mkdir(path.join(workspace.rootDir, "result", "artifacts"), { recursive: true });
+        await writeFile(path.join(workspace.rootDir, "result", "answer.md"), "Agent answer", "utf8");
+        await writeFile(path.join(workspace.rootDir, "result", "artifacts", "notes.md"), "Notes", "utf8");
+        return { exitCode: 0, stdout: "working\n", stderr: "" };
+      }
+    });
+
+    const runResponse = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        task: { goal: "Create notes." },
+        options: { mode: "sync" }
+      }
+    });
+    const run = runResponse.json();
+
+    const eventsResponse = await app.inject({ method: "GET", url: `/api/runs/${run.runId}/events` });
+
+    expect(eventsResponse.statusCode).toBe(200);
+    expect(eventsResponse.headers["content-type"]).toContain("text/event-stream");
+    expect(eventsResponse.payload).toContain("event: run.started");
+    expect(eventsResponse.payload).toContain("event: stdout.delta");
+    expect(eventsResponse.payload).toContain("event: artifact.created");
+    expect(eventsResponse.payload).toContain("event: run.completed");
+
+    await app.close();
+  });
+
+  test("GET /api/runs/:id/artifacts/* downloads artifact content", async () => {
+    const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
+    const app = await buildApp({
+      baseDir,
+      runAgent: async ({ workspace }) => {
+        await mkdir(path.join(workspace.rootDir, "result", "artifacts"), { recursive: true });
+        await writeFile(path.join(workspace.rootDir, "result", "answer.md"), "Agent answer", "utf8");
+        await writeFile(path.join(workspace.rootDir, "result", "artifacts", "notes.md"), "Notes", "utf8");
+        return { exitCode: 0, stdout: "", stderr: "" };
+      }
+    });
+
+    const runResponse = await app.inject({
+      method: "POST",
+      url: "/api/runs",
+      payload: {
+        task: { goal: "Create notes." }
+      }
+    });
+    const run = runResponse.json();
+
+    const artifactResponse = await app.inject({
+      method: "GET",
+      url: run.artifacts[0].url
+    });
+
+    expect(artifactResponse.statusCode).toBe(200);
+    expect(artifactResponse.headers["content-type"]).toContain("text/markdown");
+    expect(artifactResponse.payload).toBe("Notes");
+
+    await app.close();
+  });
+
   test("POST /api/runs returns validation errors for bad requests", async () => {
     const baseDir = await mkdtemp(path.join(tmpdir(), "agent-api-"));
     const app = await buildApp({ baseDir });
