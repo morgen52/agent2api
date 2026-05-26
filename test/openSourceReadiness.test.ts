@@ -70,13 +70,18 @@ describe("open-source readiness", () => {
     expect(readme).toContain("skills");
     expect(readme).toContain("deliverables");
     expect(readme).toContain("Implemented");
-    expect(readme).toContain("Partial");
-    expect(readme).toContain("Planned");
-    expect(readme).toContain("Not implemented");
+    expect(readme).not.toContain("| Partial |");
+    expect(readme).not.toContain("| Planned |");
+    expect(readme).not.toContain("| Not implemented |");
     expect(readme).toContain("Artifact download");
     expect(readme).toContain("SSE progress streaming");
     expect(readme).toContain("Persistent run store");
-    expect(readme).toContain("Roadmap items are planned work, not current features.");
+    expect(readme).toContain("Cancel API");
+    expect(readme).toContain("Multipart uploads");
+    expect(readme).toContain("Local shell adapter");
+    expect(readme).toContain("Skill manifest registry");
+    expect(readme).toContain("Structured audit logs");
+    expect(readme).toContain("The original public roadmap has been folded into the implementation");
   });
 
   test("repository includes standard open-source governance and CI files", async () => {

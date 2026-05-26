@@ -1,7 +1,7 @@
 import type { AgentRunRequestInput } from "../contract/requestSchema.js";
 import type { ArtifactInfo } from "../runner/resultCollector.js";
 
-export type AgentRunStatus = "running" | "completed" | "failed";
+export type AgentRunStatus = "queued" | "running" | "completed" | "failed" | "canceled" | "timed_out";
 
 export type AgentRunArtifact = ArtifactInfo & {
   url?: string;
@@ -30,6 +30,19 @@ export type AgentRunEvent = {
   id?: string;
   type: string;
   data: unknown;
+};
+
+export type Agent2APIUpload = {
+  name: string;
+  content: Blob;
+};
+
+export type SkillManifest = {
+  name: string;
+  version: string;
+  description: string;
+  inputs?: Record<string, unknown>;
+  permissions?: string[];
 };
 
 export type Agent2APIClientOptions = {
@@ -83,6 +96,49 @@ export class Agent2APIClient {
 
   async getRun(runId: string, options: Agent2APIRequestOptions = {}): Promise<AgentRunResponse> {
     return this.requestJson<AgentRunResponse>(`/api/runs/${encodeURIComponent(runId)}`, {
+      method: "GET",
+      headers: this.headers,
+      signal: options.signal
+    });
+  }
+
+  async cancelRun(runId: string, options: Agent2APIRequestOptions = {}): Promise<AgentRunResponse> {
+    return this.requestJson<AgentRunResponse>(`/api/runs/${encodeURIComponent(runId)}/cancel`, {
+      method: "POST",
+      headers: this.headers,
+      signal: options.signal
+    });
+  }
+
+  async createMultipartRun(
+    request: AgentRunRequestInput,
+    files: Agent2APIUpload[],
+    options: Agent2APIRequestOptions = {}
+  ): Promise<AgentRunResponse> {
+    const form = new FormData();
+    form.set("request", new Blob([JSON.stringify(request)], { type: "application/json" }));
+    for (const file of files) {
+      form.append("file", file.content, file.name);
+    }
+
+    return this.requestJson<AgentRunResponse>("/api/runs/multipart", {
+      method: "POST",
+      headers: this.headers,
+      body: form,
+      signal: options.signal
+    });
+  }
+
+  async listSkills(options: Agent2APIRequestOptions = {}): Promise<{ skills: SkillManifest[] }> {
+    return this.requestJson<{ skills: SkillManifest[] }>("/api/skills", {
+      method: "GET",
+      headers: this.headers,
+      signal: options.signal
+    });
+  }
+
+  async getSkill(name: string, options: Agent2APIRequestOptions = {}): Promise<SkillManifest> {
+    return this.requestJson<SkillManifest>(`/api/skills/${encodeURIComponent(name)}`, {
       method: "GET",
       headers: this.headers,
       signal: options.signal

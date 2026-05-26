@@ -23,7 +23,7 @@ export class CodexCliAdapter implements AgentAdapter {
     };
   }
 
-  run({ request, workspace, events }: AgentAdapterRunInput): Promise<ProcessResult> {
+  run({ request, workspace, events, signal }: AgentAdapterRunInput): Promise<ProcessResult> {
     return runCodexAgent({
       workspaceDir: workspace.rootDir,
       commandPath: workspace.commandPath,
@@ -35,6 +35,7 @@ export class CodexCliAdapter implements AgentAdapter {
       webSearch: request.options.webSearch,
       executor: this.executor,
       events,
+      signal,
       readCommand: this.readCommand
     });
   }

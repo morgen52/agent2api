@@ -41,6 +41,44 @@ describe("Agent2APIClient", () => {
     expect(calls).toEqual(["http://127.0.0.1:3030/api/runs/run_1"]);
   });
 
+  test("cancels a run by id", async () => {
+    const calls: Array<{ url: string; init?: RequestInit }> = [];
+    const client = new Agent2APIClient({
+      baseUrl: "http://127.0.0.1:3030",
+      fetch: async (url, init) => {
+        calls.push({ url: String(url), init });
+        return jsonResponse({ runId: "run_1", status: "canceled", answer: "", artifacts: [] });
+      }
+    });
+
+    const response = await client.cancelRun("run_1");
+
+    expect(response.status).toBe("canceled");
+    expect(calls[0]?.url).toBe("http://127.0.0.1:3030/api/runs/run_1/cancel");
+    expect(calls[0]?.init?.method).toBe("POST");
+  });
+
+  test("creates multipart runs with uploaded files", async () => {
+    const calls: Array<{ url: string; init?: RequestInit }> = [];
+    const client = new Agent2APIClient({
+      baseUrl: "http://127.0.0.1:3030",
+      fetch: async (url, init) => {
+        calls.push({ url: String(url), init });
+        return jsonResponse({ runId: "run_1", status: "completed", answer: "Done", artifacts: [] });
+      }
+    });
+
+    const response = await client.createMultipartRun(
+      { task: { goal: "Use upload." } },
+      [{ name: "note.md", content: new Blob(["# Note"], { type: "text/markdown" }) }]
+    );
+
+    expect(response.runId).toBe("run_1");
+    expect(calls[0]?.url).toBe("http://127.0.0.1:3030/api/runs/multipart");
+    expect(calls[0]?.init?.method).toBe("POST");
+    expect(calls[0]?.init?.body).toBeInstanceOf(FormData);
+  });
+
   test("downloads artifact content from the artifact URL", async () => {
     const calls: string[] = [];
     const client = new Agent2APIClient({
@@ -61,6 +99,27 @@ describe("Agent2APIClient", () => {
 
     expect(text).toBe("Draft content");
     expect(calls).toEqual(["http://127.0.0.1:3030/api/runs/run_1/artifacts/draft.md"]);
+  });
+
+  test("lists and reads skill manifests", async () => {
+    const calls: string[] = [];
+    const client = new Agent2APIClient({
+      baseUrl: "http://127.0.0.1:3030",
+      fetch: async (url) => {
+        calls.push(String(url));
+        if (String(url).endsWith("/api/skills")) {
+          return jsonResponse({ skills: [{ name: "technical-writing", version: "1.0.0", description: "Write docs." }] });
+        }
+        return jsonResponse({ name: "technical-writing", version: "1.0.0", description: "Write docs." });
+      }
+    });
+
+    const skills = await client.listSkills();
+    const skill = await client.getSkill("technical-writing");
+
+    expect(skills.skills[0]?.name).toBe("technical-writing");
+    expect(skill.description).toBe("Write docs.");
+    expect(calls).toEqual(["http://127.0.0.1:3030/api/skills", "http://127.0.0.1:3030/api/skills/technical-writing"]);
   });
 
   test("builds artifact download URLs from run id and artifact path", async () => {

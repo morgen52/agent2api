@@ -44,3 +44,6 @@ if (artifact) {
 } else {
   console.log(completed.answer);
 }
+
+const { skills } = await client.listSkills();
+console.log(`available skills: ${skills.map((skill) => skill.name).join(", ") || "none"}`);

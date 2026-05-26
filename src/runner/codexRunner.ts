@@ -69,12 +69,14 @@ export async function runCodexAgent(input: CodexExecArgsInput & {
   timeoutMs: number;
   executor?: ProcessExecutor;
   events?: ProcessEvents;
+  signal?: AbortSignal;
   readCommand?: (commandPath: string) => Promise<string>;
 }): Promise<ProcessResult> {
   const commandMarkdown = await (input.readCommand ?? readCommandFile)(input.commandPath);
   const args = buildCodexExecArgs(input);
   const executor = input.executor ?? spawnExecutor;
   const controller = new AbortController();
+  const signal = input.signal ? AbortSignal.any([controller.signal, input.signal]) : controller.signal;
   let timeout: NodeJS.Timeout | undefined;
 
   try {
@@ -82,7 +84,7 @@ export async function runCodexAgent(input: CodexExecArgsInput & {
       executor("codex", args, {
         cwd: input.workspaceDir,
         stdin: commandMarkdown,
-        signal: controller.signal,
+        signal,
         onStdout: input.events?.stdout,
         onStderr: input.events?.stderr
       }),

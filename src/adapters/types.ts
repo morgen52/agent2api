@@ -12,6 +12,7 @@ export type AgentAdapterRunInput = {
   request: AgentRunRequest;
   workspace: RunWorkspace;
   events?: ProcessEvents;
+  signal?: AbortSignal;
 };
 
 export interface AgentAdapter {

@@ -61,7 +61,7 @@ This gives application developers a simple contract: describe the work and expec
 
 ## Feature Support Matrix
 
-Roadmap items are planned work, not current features. This table is the source of truth for what the current package supports.
+This table is the source of truth for what the current package supports.
 
 | Capability | Status | Notes |
 | --- | --- | --- |
@@ -69,15 +69,19 @@ Roadmap items are planned work, not current features. This table is the source o
 | Sync runs | Implemented | `POST /api/runs` waits for completion when `options.mode` is `sync`. |
 | Async runs and polling | Implemented | `POST /api/runs` returns `202`; clients poll `GET /api/runs/:id`. |
 | Artifact download | Implemented | Returned artifacts include `url`; clients download through `GET /api/runs/:id/artifacts/*`. |
-| SSE progress streaming | Partial | `GET /api/runs/:id/events` streams lifecycle, stdout, stderr, and artifact events. Durable replay after server restart is not implemented. |
-| JS/TS SDK | Implemented | `agent2api/sdk` exposes `createRun`, `getRun`, `downloadArtifact`, `downloadArtifactText`, and `streamRunEvents`. |
-| JSON file context | Implemented | Request files can use `text` or `contentBase64`. |
-| URL context | Partial | URLs are recorded for the agent; the server does not fetch remote pages in v1. |
+| SSE progress streaming | Implemented | `GET /api/runs/:id/events` streams lifecycle, stdout, stderr, artifact, cancel, timeout, and terminal events. Events are persisted with the run record and replay after restart. |
+| JS/TS SDK | Implemented | `agent2api/sdk` exposes run creation, multipart uploads, polling, cancellation, artifact downloads, SSE streaming, and skill registry helpers. |
+| JSON and multipart file context | Implemented | Request files can use JSON `text` or `contentBase64`; Multipart uploads can use `POST /api/runs/multipart`. |
+| URL context | Implemented | URL references are fetched into workspace files with SSRF guards, byte limits, and explicit allowlists for private hosts. |
 | Codex CLI adapter | Implemented | Runs local `codex exec` through the adapter boundary. |
-| Persistent run store | Planned | Current run records are in memory; files remain on disk but run metadata is not restored after restart. |
-| Cancel API | Not implemented | Planned as `POST /api/runs/:id/cancel`. |
-| Multipart uploads | Planned | Current upload path is JSON-only. |
-| Additional runtime adapters | Planned | Candidate adapters include Claude Code CLI, OpenAI Agents SDK, and remote HTTP agents. |
+| Local shell adapter | Implemented | `agent: "local-shell"` runs an explicit local command with workspace paths exposed through environment variables. |
+| Persistent run store | Implemented | Run metadata, events, results, and artifact URLs are stored under each run directory and loaded on restart. |
+| Cancel API | Implemented | `POST /api/runs/:id/cancel` aborts queued or running tasks and emits `run.canceled`. |
+| Queue and concurrency limits | Implemented | `maxConcurrentRuns` queues async work over the configured limit. |
+| Skill manifest registry | Implemented | `GET /api/skills` and `GET /api/skills/:name` serve local JSON skill manifests. |
+| Authenticated local deployment | Implemented | `apiKey` enables bearer-token protection for API routes. |
+| Artifact retention policy | Implemented | `retentionMs` removes expired run directories on startup. |
+| Structured audit logs | Implemented | `auditLogPath` writes JSONL entries for auth failures, run lifecycle events, cancellation, and artifact downloads. |
 
 ## Design
 
@@ -118,6 +122,9 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
   [*] --> running
+  [*] --> queued
+  queued --> running
+  queued --> canceled
   running --> completed
   running --> failed
   running --> timed_out
@@ -279,6 +286,24 @@ if (completed.artifacts[0]) {
   const artifactText = await client.downloadArtifactText(completed.artifacts[0]);
   console.log(artifactText);
 }
+
+await client.cancelRun(run.runId);
+```
+
+For browser uploads, use multipart:
+
+```ts
+await client.createMultipartRun(
+  { task: { goal: "Review this uploaded brief." }, options: { mode: "async" } },
+  [{ name: "brief.md", content: new Blob(["# Brief"], { type: "text/markdown" }) }]
+);
+```
+
+Skill discovery is available through the same SDK:
+
+```ts
+const { skills } = await client.listSkills();
+const writingSkill = await client.getSkill("technical-writing");
 ```
 
 ## Adapter Model
@@ -288,22 +313,21 @@ Adapters isolate runtime-specific behavior behind a small interface:
 ```ts
 export interface AgentAdapter {
   capabilities(): AgentAdapterCapabilities;
-  run(input: { request: AgentRunRequest; workspace: RunWorkspace }): Promise<ProcessResult>;
+  run(input: {
+    request: AgentRunRequest;
+    workspace: RunWorkspace;
+    events?: ProcessEvents;
+    signal?: AbortSignal;
+  }): Promise<ProcessResult>;
 }
 ```
 
-Current adapter:
+Current adapters:
 
 | Adapter | Runtime | Behavior |
 | --- | --- | --- |
 | `codex-cli` | Codex CLI | Renders `command.md`, runs `codex exec`, and collects `result/answer.md` plus `result/artifacts/`. |
-
-Good future adapters:
-
-- `claude-code-cli`
-- `openai-agents-sdk`
-- `local-shell-agent`
-- `remote-agent-http`
+| `local-shell` | Local process | Runs `adapterOptions.command` with workspace paths in environment variables. Useful for tests, custom scripts, and prototype runtimes. |
 
 The rule is simple: new adapters may map the request however they need, but they should not force LLM-provider concepts into the public Agent Task Protocol.
 
@@ -314,50 +338,45 @@ Default posture:
 - Binds to `127.0.0.1`.
 - CORS is disabled unless `CORS_ORIGIN` is set.
 - Runs are isolated by workspace directory.
-- URL references are recorded but not fetched by the server.
+- URL fetching blocks private and loopback hosts unless explicitly allowlisted.
+- Optional bearer-token auth is available through `apiKey`.
+- Audit logs can be written as JSONL through `auditLogPath`.
+- Run directories can be removed by retention policy through `retentionMs`.
 - Production dependency audit is part of CI.
 
-Before exposing this beyond localhost, add authentication, quotas, run isolation, audit logs, artifact retention policy, and stronger process sandboxing. Avoid exposing `danger-full-access` to untrusted callers.
+Before exposing this beyond localhost, configure authentication, quotas, retention, audit logging, URL allowlists, and stronger process sandboxing. Avoid exposing `danger-full-access` to untrusted callers.
 
 ## Project Layout
 
 ```text
 src/
   adapters/          Agent runtime adapter contracts and Codex adapter
+  audit/             JSONL audit logging
+  context/           URL context fetching and guards
   contract/          Zod request schema and TypeScript types
   runner/            Process runner and result collection
+  sdk/               Browser and Node client SDK
   server/            Fastify HTTP API
+  skills/            Local skill manifest registry
+  store/             File-backed run store
   workspace/         Per-run workspace setup
 schemas/             Public JSON Schema
 docs/                Protocol, API, and architecture docs
 examples/            Example request and tiny HTML client
 assets/              README images and project visuals
-src/sdk/             Browser and Node client SDK
 test/                Contract, adapter, workspace, runner, and readiness tests
 ```
 
 ## Roadmap
 
-Roadmap items are planned work, not current features.
+The original public roadmap has been folded into the implementation: persistent runs, cancellation, queueing, multipart uploads, a second adapter, skill manifests, optional auth, retention, and audit logs are all present in the current package.
 
-Near-term:
+Next work should focus on ecosystem depth rather than missing baseline capability:
 
-- Persistent run store with SQLite.
-- Cancel API for running tasks.
-- Queue and concurrency limits.
-- Multipart browser uploads.
-
-Adapter ecosystem:
-
-- Adapter authoring guide.
-- Second runtime adapter.
-- Skill manifest format and local skill registry.
-
-Deployment hardening:
-
-- Optional authenticated deployment mode.
-- Artifact retention policy.
-- Structured audit logs.
+- More production adapter packages.
+- A hosted deployment guide.
+- A conformance test suite for third-party Agent Task Protocol implementations.
+- A richer browser demo app built on the SDK.
 
 ## Contributing
 

@@ -21,7 +21,7 @@ The user-visible job definition.
 The external material the caller gives the agent.
 
 - `files`: uploaded files as `text` or `contentBase64`.
-- `urls`: references the agent may inspect if its runtime supports web access.
+- `urls`: references that Agent2API fetches into workspace files when allowed by URL safety rules.
 - `notes`: small inline context that is not worth creating a file for.
 
 ### `skills`
@@ -60,8 +60,8 @@ Expected files or artifacts the agent should place under `result/artifacts/`.
 The public protocol should stay stable even if the backend changes.
 
 - Codex CLI adapter maps `task/context/skills/deliverables` into `command.md`.
-- A future Claude Code adapter can map the same request into its own CLI/session format.
-- A future hosted agent adapter can map the same request into its job API.
+- Local shell adapter runs an explicit command with workspace paths exposed through environment variables.
+- Additional adapters can map the same request into their own CLI, hosted job API, or SDK runtime.
 
 Provider-specific knobs belong in `adapterOptions`, not in the top-level protocol.
 
