@@ -169,6 +169,14 @@ curl -s http://127.0.0.1:3030/api/runs \
 
 Run folders are written to `data/runs` unless `AGENT_RUNS_DIR` is set.
 
+Run real local demos:
+
+```bash
+npm run demo
+```
+
+The demo command starts an Agent2API server on a random local port and exercises sync artifacts, async SSE, multipart upload, guarded URL context, cancellation, skill discovery, audit logging, and restart persistence through the SDK.
+
 ## Usage
 
 Minimal request:

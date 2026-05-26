@@ -116,7 +116,7 @@ export class Agent2APIClient {
     options: Agent2APIRequestOptions = {}
   ): Promise<AgentRunResponse> {
     const form = new FormData();
-    form.set("request", new Blob([JSON.stringify(request)], { type: "application/json" }));
+    form.set("request", JSON.stringify(request));
     for (const file of files) {
       form.append("file", file.content, file.name);
     }

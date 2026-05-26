@@ -96,7 +96,8 @@ describe("open-source readiness", () => {
       ".github/pull_request_template.md",
       ".github/ISSUE_TEMPLATE/bug_report.md",
       ".github/ISSUE_TEMPLATE/feature_request.md",
-      "examples/sdk-client.ts"
+      "examples/sdk-client.ts",
+      "examples/real-demos.ts"
     ];
 
     for (const file of requiredFiles) {
@@ -105,11 +106,15 @@ describe("open-source readiness", () => {
     }
 
     const ci = await readText(".github/workflows/ci.yml");
+    const pkg = (await readJson("package.json")) as Record<string, unknown>;
     expect(ci).toContain("npm test");
     expect(ci).toContain("npm run build");
     expect(ci).toContain("npm run check:examples");
     expect(ci).toContain("npm run smoke");
     expect(ci).toContain("npm audit --omit=dev");
+    expect(pkg.scripts).toMatchObject({
+      demo: "tsx examples/real-demos.ts"
+    });
   });
 
   test("package metadata is publishable as an open-source package", async () => {
@@ -125,7 +130,7 @@ describe("open-source readiness", () => {
     expect(pkg.types).toBe("./dist/src/index.d.ts");
     expect(pkg.scripts).toMatchObject({
       start: "node dist/src/server/index.js",
-      "check:examples": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext examples/sdk-client.ts"
+      "check:examples": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext examples/sdk-client.ts examples/real-demos.ts"
     });
     expect(pkg.exports).toMatchObject({
       ".": {
