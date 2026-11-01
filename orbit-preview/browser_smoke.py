@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Mobile-browser end-to-end check: Render page -> public GitHub source feed."""
+import hashlib
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 URL = "https://orbit-learning-preview-2026.onrender.com/?browser_smoke=1"
@@ -12,6 +14,9 @@ def main():
         page.on("pageerror", lambda e: errors.append(str(e)))
         response = page.goto(URL, wait_until="domcontentloaded", timeout=45000)
         assert response and response.status == 200, f"Page status: {response.status if response else 'none'}"
+        expected = Path(__file__).with_name("index.html").read_bytes()
+        actual = response.body()
+        assert hashlib.sha256(actual).digest() == hashlib.sha256(expected).digest(), "Stale Render HTML (source hash differs)"
         page.locator("#bottom [data-page='radar']").click(timeout=10000)
         page.wait_for_selector('section.paper a[href^="https://arxiv.org/abs/"]', timeout=25000)
         count = page.locator('section.paper a[href^="https://arxiv.org/abs/"]').count()

@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
+      - name: Test exact-deploy verifier against stale HTML (offline)
+        run: cd orbit-preview && python3 -m unittest -v test_check_live.py
       - name: Verify live HTTP content
         run: python3 orbit-preview/check_live.py
       - name: Install browser test dependencies
