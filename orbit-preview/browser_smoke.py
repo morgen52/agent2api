@@ -7,7 +7,7 @@ URL = "https://orbit-learning-preview-2026.onrender.com/?browser_smoke=1"
 def main():
     errors = []
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="chrome", headless=True, args=["--no-sandbox"])
+        browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
         page = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=2)
         page.on("pageerror", lambda e: errors.append(str(e)))
         response = page.goto(URL, wait_until="domcontentloaded", timeout=45000)
