@@ -16,3 +16,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify live HTTP content
         run: python3 orbit-preview/check_live.py
+      - name: Install browser test dependencies
+        run: |
+          python3 -m pip install --user playwright==1.56.0
+          python3 -m playwright install chromium
+      - name: Verify mobile UI and live public research feed
+        run: python3 orbit-preview/browser_smoke.py
