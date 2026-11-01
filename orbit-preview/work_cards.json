@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "visibility": "public-source-only",
+  "generated_at": "2026-11-01",
+  "generator": "source-grounded hand-reviewed manifest; no autonomous inference",
+  "cards": [
+    {
+      "id": "c10",
+      "category": "真实工作 · Agent2API",
+      "time": "45秒",
+      "title": "Agent2API：为什么前端不应该直接绑定某个 Agent 执行器？",
+      "thesis": "让前端只提交任务与验收条件，工作区和 Adapter 消化不同执行器的细节。",
+      "labels": [
+        "任务契约",
+        "隔离工作区",
+        "Adapter"
+      ],
+      "type": "flow",
+      "draw": {
+        "left": [
+          "前端只提目标",
+          "Task + Context",
+          "Deliverables / 验收"
+        ],
+        "right": [
+          "Agent2API 运行层",
+          "Schema → 工作区",
+          "Adapter → Artifacts"
+        ]
+      },
+      "detail": "这是真实开源代码中的接口边界：requestSchema.ts 用 Zod 校验 task/context/skills/deliverables；workspace.ts 为每次执行创建 input/result/artifacts 目录；app.ts 选择运行时 Adapter；resultCollector.ts 收集 answer.md 与产物。它证明了代码如何组织，而不证明任意执行器都已兼容，也不代表生产级安全已经通过外部审计。",
+      "quiz": "新接入一种 Agent 执行器时，最应该保持哪一层不变？",
+      "opts": [
+        "前端的任务契约与交付语义",
+        "前端直接调用该执行器的专用 Tool schema"
+      ],
+      "correct": 0,
+      "explain": "适配层吸收执行器差异，前端以稳定的任务与交付物契约描述目标。",
+      "source": "真实公开源码 @4ccb15e：src/contract/requestSchema.ts、src/workspace/workspace.ts、src/server/app.ts、src/runner/resultCollector.ts；CI 26431056979 success。仅验证设计与测试，用户收益未验证。",
+      "sourceUrl": "https://github.com/morgen52/agent2api/blob/4ccb15e568807deef015f053eedc09ea9215af65/src/contract/requestSchema.ts",
+      "sourceLinks": [
+        {
+          "label": "工作区源码",
+          "url": "https://github.com/morgen52/agent2api/blob/4ccb15e568807deef015f053eedc09ea9215af65/src/workspace/workspace.ts"
+        },
+        {
+          "label": "Adapter 路由",
+          "url": "https://github.com/morgen52/agent2api/blob/4ccb15e568807deef015f053eedc09ea9215af65/src/server/app.ts"
+        },
+        {
+          "label": "结果收集",
+          "url": "https://github.com/morgen52/agent2api/blob/4ccb15e568807deef015f053eedc09ea9215af65/src/runner/resultCollector.ts"
+        },
+        {
+          "label": "对应 CI",
+          "url": "https://github.com/morgen52/agent2api/actions/runs/26431056979"
+        }
+      ],
+      "evidence": "源码结构 + CI 测试（非用户效果）",
+      "transfer": {
+        "q": "同一个任务要切换到另一套 Agent CLI，新 CLI 的参数不同，但前端的目标和交付物不变。最合理的修改位置？",
+        "opts": [
+          "在 Adapter 内转换请求并验证产物",
+          "让每个前端重新实现新 CLI 的参数与工具协议"
+        ],
+        "correct": 0,
+        "why": "前端的稳定契约与运行时特定调用分离，迁移成本集中在 Adapter 和运行边界。"
+      }
+    }
+  ]
+}
