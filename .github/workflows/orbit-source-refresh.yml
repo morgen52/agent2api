@@ -1,7 +1,10 @@
 name: ORBIT public research radar refresh
 on:
   schedule:
+    # GitHub schedule events can be delayed or dropped; stagger a backup slot.
+    # Refresh is idempotent and commits only when public paper metadata changes.
     - cron: "17 */6 * * *"
+    - cron: "43 1,7,13,19 * * *"
   workflow_dispatch:
   push:
     branches: [main]
