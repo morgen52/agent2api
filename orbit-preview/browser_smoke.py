@@ -17,6 +17,15 @@ def main():
         expected = Path(__file__).with_name("index.html").read_bytes()
         actual = response.body()
         assert hashlib.sha256(actual).digest() == hashlib.sha256(expected).digest(), "Stale Render HTML (source hash differs)"
+        # Public, source-grounded real-work card loads without any private data.
+        page.wait_for_selector("[data-work-card]", timeout=30000)
+        page.locator("[data-work-card]").click(timeout=10000)
+        assert page.locator("#main h3").filter(has_text="Agent2API").count() >= 1, "Work card missing"
+        page.locator('[data-action="detail"][data-id="c10"]').click(timeout=10000)
+        source_links = page.locator('a[href*="/blob/4ccb15e568807deef015f053eedc09ea9215af65/src/"]')
+        assert source_links.count() >= 4, "Source links not rendered"
+        page.locator('[data-action="answer"][data-id="c10"]').first.click(timeout=10000)
+        assert page.evaluate("Boolean(JSON.parse(localStorage.getItem('orbit-personal-agent-v1')).reviewDue.c10)"), "Seven-day transfer not scheduled"
         page.locator("#bottom [data-page='radar']").click(timeout=10000)
         page.wait_for_selector('section.paper a[href^="https://arxiv.org/abs/"]', timeout=25000)
         count = page.locator('section.paper a[href^="https://arxiv.org/abs/"]').count()
