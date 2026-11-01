@@ -52,7 +52,7 @@ else{svg+=pill(22,24,262,62,t.left[0]);svg+=pill(316,24,262,62,t.right[0],'#174c
 return svg+'</svg>'}
 function nav(){document.getElementById('sidenav').innerHTML=NAV.map(([k,i,t])=>`<button data-page="${k}" class="${state.view===k?'active':''}"><span class="ico">${i}</span>${t}</button>`).join('');document.getElementById('bottom').innerHTML=NAV.map(([k,i,t])=>`<button data-page="${k}" class="${state.view===k?'active':''}"><span class="ico">${i}</span>${t}</button>`).join('')}
 function header(title,lead){return `<div class="topline"><span><span class="dot"></span>ORBIT · 公开学习预览</span><span class="smalltag">V0.2 · Sourced Preview</span></div><h1 class="sectiontitle">${title}</h1><p class="lead">${lead}</p>`}
-function feed(){let c=CARDS[state.idx%CARDS.length];markViewed(c.id);let expanded=state.expanded.includes(c.id);let answered=state.answers[c.id];return header('只管学，别管调度。','一个机制，一张图。每张卡片约 30 秒。')+`<section class="hero"><div class="ring"></div><div class="eyebrow">TODAY'S MODE</div><h2>好奇 → 理解 → 应用</h2><p>后台负责组织工作；你只负责把新知识带走。</p><div class="pills"><span class="pill">视觉优先</span><span class="pill">少阅读</span><span class="pill">可追溯</span></div></section><div class="strip"><strong>为你选出的知识</strong><small>${state.idx%CARDS.length+1} / ${CARDS.length} · ${state.completed.length} 张已掌握</small></div><article class="paper"><div class="meta"><span class="badge">${escapeHtml(c.category)}</span><span>◷ ${c.time}</span></div><h3>${escapeHtml(c.title)}</h3><p class="thesis">${escapeHtml(c.thesis)}</p>${graphic(c)}<div class="pills">${c.labels.map(s=>`<span class="pill">${escapeHtml(s)}</span>`).join('')}</div><div class="actions"><button class="btn" data-action="master" data-id="${c.id}">${state.completed.includes(c.id)?'✓ 已掌握':'✓ 看懂了'}</button><button class="btn alt" data-action="detail" data-id="${c.id}">${expanded?'收起机制':'再解释一下'}</button><button class="btn ghost" data-action="next">下一张 →</button><button class="btn ghost" data-action="speak">♫ 听讲</button></div>${expanded?`<div class="detail"><strong>为什么？</strong><br>${escapeHtml(c.detail)}<p class="micro">出处/证据类型：${escapeHtml(c.source)}${c.sourceUrl?`<br><a class="link" href="${escapeHtml(c.sourceUrl)}" target="_blank" rel="noopener noreferrer">↗ 阅读原始论文（可核查）</a>`:""}</p></div>`:''}<div class="quiz"><p class="qtitle">◉ 10 秒自测 · ${escapeHtml(c.quiz)}</p><div class="choices">${c.opts.map((x,i)=>`<button class="choice ${answered!==undefined?(i===c.correct?'right':(i===answered&&i!==c.correct?'wrong':'')):''}" data-action="answer" data-id="${c.id}" data-n="${i}">${i===0?'A':'B'} · ${escapeHtml(x)}</button>`).join('')}</div>${answered!==undefined?`<div class="feedback">${answered===c.correct?'✓ 理解正确':'↺ 值得再看一下'} · ${escapeHtml(c.explain)}</div>`:''}</div></article><p class="footnote">新卡片 c8/c9 已核对 arXiv 一手来源；其他卡片是技术机制示例或研究假设，不能当作已验证结论。答题与掌握状态保存在本机，尚无跨设备同步或实时 AI 生成。</p>`}
+function feed(){let c=CARDS[state.idx%CARDS.length];markViewed(c.id);let expanded=state.expanded.includes(c.id);let answered=state.answers[c.id];return header('只管学，别管调度。','一个机制，一张图。每张卡片约 30 秒。')+`<section class="hero"><div class="ring"></div><div class="eyebrow">TODAY'S MODE</div><h2>好奇 → 理解 → 应用</h2><p>后台负责组织工作；你只负责把新知识带走。</p><div class="pills"><span class="pill">视觉优先</span><span class="pill">少阅读</span><span class="pill">可追溯</span></div></section><div class="strip"><strong>为你选出的知识</strong><small>${state.idx%CARDS.length+1} / ${CARDS.length} · ${state.completed.length} 张已掌握</small></div><article class="paper"><div class="meta"><span class="badge">${escapeHtml(c.category)}</span><span>◷ ${c.time}</span></div><h3>${escapeHtml(c.title)}</h3><p class="thesis">${escapeHtml(c.thesis)}</p>${graphic(c)}<div class="pills">${c.labels.map(s=>`<span class="pill">${escapeHtml(s)}</span>`).join('')}</div><div class="actions"><button class="btn" data-action="master" data-id="${c.id}">${state.completed.includes(c.id)?'✓ 已掌握':'✓ 看懂了'}</button><button class="btn alt" data-action="detail" data-id="${c.id}">${expanded?'收起机制':'再解释一下'}</button><button class="btn ghost" data-action="next">下一张 →</button><button class="btn ghost" data-action="speak">♫ 听讲</button></div>${expanded?`<div class="detail"><strong>为什么？</strong><br>${escapeHtml(c.detail)}<p class="micro">出处/证据类型：${escapeHtml(c.source)}${c.sourceUrl?`<br><a class="link" href="${escapeHtml(c.sourceUrl)}" target="_blank" rel="noopener noreferrer">↗ 查看原始来源（可核查）</a>`:""}</p></div>`:''}<div class="quiz"><p class="qtitle">◉ 10 秒自测 · ${escapeHtml(c.quiz)}</p><div class="choices">${c.opts.map((x,i)=>`<button class="choice ${answered!==undefined?(i===c.correct?'right':(i===answered&&i!==c.correct?'wrong':'')):''}" data-action="answer" data-id="${c.id}" data-n="${i}">${i===0?'A':'B'} · ${escapeHtml(x)}</button>`).join('')}</div>${answered!==undefined?`<div class="feedback">${answered===c.correct?'✓ 理解正确':'↺ 值得再看一下'} · ${escapeHtml(c.explain)}</div>`:''}</div></article><p class="footnote">新卡片 c8/c9 已核对 arXiv 一手来源；其他卡片是技术机制示例或研究假设，不能当作已验证结论。答题与掌握状态保存在本机，尚无跨设备同步或实时 AI 生成。</p>`}
 function opportunities(){return header('下一件事，我来找。','根据示例技术目标生成的建议；并非实时监控或自动执行。')+`<div class="notice">✦ 此版本会帮你组织机会与生成可执行任务包。真正的后台搜索、委派执行还需接入模型与授权工具。</div><div class="strip"><strong>优先机会</strong><small>${OPS.length-state.dismissed.length} 个待评估</small></div>`+OPS.filter(o=>!state.dismissed.includes(o.id)).map((o,i)=>`<article class="paper"><div class="rowcard"><span class="symbol">${o.icon}</span><div><h3>${escapeHtml(o.title)}</h3><p>${escapeHtml(o.gain)}</p><div class="score">${i===0?'优先推荐':'候选机会'} · ${escapeHtml(GOALS.find(g=>g.id===o.for).name)}</div><div class="micro">边界：${escapeHtml(o.risk)}</div></div></div><div class="opfoot"><button class="btn" data-action="task" data-id="${o.id}">查看执行任务包 ↗</button><button class="btn alt" data-action="queue" data-id="${o.id}">${state.saved.includes(o.id)?'✓ 已加入计划':'加入计划'}</button><button class="btn ghost" data-action="dismiss" data-id="${o.id}">跳过</button></div></article>`).join('')+(state.dismissed.length===OPS.length?'<div class="empty">今天没有待评估的机会。你可以去刷图卡。</div>':'')+`<div id="taskbox"></div>`}
 function goals(){return header('所有任务都有来处。','Goal Graph：记录长期目标，而不只是任务列表。')+`<div class="paper"><svg class="graphsvg" viewBox="0 0 560 270" role="img" aria-label="长期目标图"><g fill="none" stroke="#5c927b" stroke-width="2"><path d="M280 64 L94 137 M280 64 L280 137 M280 64 L466 137"/></g><rect x="172" y="16" rx="19" width="216" height="51" fill="#245642" stroke="#6ad0a1"/><text x="280" y="47" fill="#e0ffec" text-anchor="middle" font-size="17">长期人类收益</text>${[['算法内化',15],['Harness',200],['持续学习',387]].map(([s,x])=>`<rect x="${x}" y="140" rx="15" width="158" height="65" fill="#153532" stroke="#4a8e78"/><text x="${x+79}" y="178" fill="#e5f7ef" font-size="16" text-anchor="middle">${s}</text>`).join('')}<text x="280" y="247" fill="#94aba9" font-size="12" text-anchor="middle">工作 / 研究 / 学习共享一个长期 Goal Graph</text></svg></div>`+GOALS.map(g=>`<article class="paper goal"><div class="rowcard"><span class="symbol">${g.icon}</span><div><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.what)}</p><div class="score">${escapeHtml(g.status)}</div></div></div><div class="statnote"><span>关联图卡</span><em>${g.links.length} 张</em><span>· 可验证里程碑</span><span class="qmark">尚未接入</span></div></article>`).join('')+`<p class="footnote">这些目标是根据公开技术主题构建的示例，不代表用户已确认全部目标及优先级；不包含私人账号、地址或敏感凭据。</p>`}
 function gains(){let tests=Object.keys(state.answers).length,correct=Object.entries(state.answers).filter(([k,v])=>CARDS.find(c=>c.id===k)?.correct===v).length;return header('只统计真实发生的收益。','不虚构“省了多少分钟”或者“增长了多少知识”。')+`<div class="split"><div class="tile"><div class="label">已完成图卡</div><div class="num">${state.completed.length}</div><div class="micro">由你的操作记录</div></div><div class="tile"><div class="label">自测正确率</div><div class="num">${tests?Math.round(100*correct/tests)+'%':'—'}</div><div class="micro">${tests} 次独立卡片作答</div></div><div class="tile"><div class="label">管理时间净节省</div><div class="num">${state.baselineMinutes!==''&&state.reviewMinutes!==''?(Number(state.baselineMinutes)-Number(state.reviewMinutes))+'m':'待测'}</div><div class="micro">需要同类任务基线</div></div><div class="tile"><div class="label">7 天知识迁移</div><div class="num" id="transfer-score">待测</div><div class="micro" id="transfer-sub">独立迁移题，满 7 天后开放</div></div></div><div class="strip"><strong>记录真实成本</strong><small>可选 · 仅本机</small></div><div class="paper"><div class="micro" style="margin:0 0 9px">同类任务：过去人工管理分钟数</div><input class="field" id="baseline" inputmode="numeric" type="number" min="0" placeholder="例如 45" value="${escapeHtml(state.baselineMinutes)}"/><div class="micro" style="margin:12px 0 9px">本次使用后人工管理分钟数</div><input class="field" id="review" inputmode="numeric" type="number" min="0" placeholder="例如 20" value="${escapeHtml(state.reviewMinutes)}"/><div class="actions"><button class="btn" data-action="save-metrics">记录本次观察</button></div><p class="footnote">此差值仅是自报观察，不构成因果结论。严谨评估需同类任务对照。</p></div><div class="strip"><strong>控制数据</strong><small>没有远程服务器</small></div><div class="paper"><p class="muted" style="font-size:13px;margin-top:0">可导出学习记录，或者导入之前导出的 JSON。刷新网页后同一浏览器保留数据。</p><div class="actions"><button class="btn alt" data-action="export">导出我的记录 ↓</button><button class="btn alt" data-action="import">导入 JSON ↑</button><button class="btn ghost" data-action="reset">清空本机记录</button></div><input id="file" type="file" accept="application/json,.json" hidden/><p class="footnote">原型不向服务器上传数据；清除浏览器站点数据会同时清除本地进度。建议定期导出备份。</p></div>`}
@@ -188,5 +188,83 @@ document.addEventListener('click',e=>{
  radarError='';loadRadar(true);render();
 },true);
 render();
+</script>
+<script>
+'use strict';
+// Public-source work learning card. No user/private repository data is fetched.
+// The manifest is manually source-reviewed; automatic discovery/verification is not claimed.
+const ORBIT_WORK_URL='https://raw.githubusercontent.com/morgen52/agent2api/orbit-preview-2026-11/orbit-preview/work_cards.json';
+let orbitWorkLoaded=false;
+function orbitValidWorkCard(c){
+ if(!c || !/^c[0-9]{1,3}$/.test(c.id) || CARDS.some(x=>x.id===c.id))return false;
+ const strings=['category','time','title','thesis','detail','quiz','explain','source','sourceUrl'];
+ if(strings.some(k=>typeof c[k]!=='string'||!c[k].trim()||c[k].length>2000))return false;
+ if(!['flow','layers','compare','split','triad','loop'].includes(c.type))return false;
+ if(!Array.isArray(c.labels)||c.labels.length!==3||c.labels.some(x=>typeof x!=='string'||x.length>45))return false;
+ if(!c.draw||!Array.isArray(c.draw.left)||!Array.isArray(c.draw.right)||c.draw.left.length!==3||c.draw.right.length!==3)return false;
+ if([...c.draw.left,...c.draw.right].some(x=>typeof x!=='string'||x.length>48))return false;
+ if(!Array.isArray(c.opts)||c.opts.length!==2||c.opts.some(x=>typeof x!=='string'||x.length>150)||![0,1].includes(c.correct))return false;
+ const pinned=/^https:\/\/github\.com\/morgen52\/agent2api\/blob\/[0-9a-f]{40}\/src\/[a-zA-Z0-9_./-]+$/;
+ if(!pinned.test(c.sourceUrl))return false;
+ if(!Array.isArray(c.sourceLinks)||c.sourceLinks.length<2||c.sourceLinks.length>6)return false;
+ if(c.sourceLinks.some(x=>!x||typeof x.label!=='string'||x.label.length>30||typeof x.url!=='string'||!(pinned.test(x.url)||/^https:\/\/github\.com\/morgen52\/agent2api\/actions\/runs\/[0-9]+$/.test(x.url))))return false;
+ const t=c.transfer;
+ if(!t||typeof t.q!=='string'||t.q.length>400||!Array.isArray(t.opts)||t.opts.length!==2||t.opts.some(x=>typeof x!=='string'||x.length>160)||![0,1].includes(t.correct)||typeof t.why!=='string'||t.why.length>500)return false;
+ return true;
+}
+async function orbitLoadWork(){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+ try{
+  const response=await fetch(ORBIT_WORK_URL+'?v='+Math.floor(Date.now()/3600000),{signal:controller.signal,cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const obj=await response.json();
+  if(obj.schema!==1||obj.visibility!=='public-source-only'||!Array.isArray(obj.cards)||obj.cards.length>10)throw Error('invalid work manifest');
+  let accepted=0;
+  for(const c of obj.cards){
+   if(!orbitValidWorkCard(c))continue;
+   const {transfer,...card}=c;
+   CARDS.push(card);
+   ORBIT_TRANSFER[c.id]=transfer;
+   accepted++;
+  }
+  orbitWorkLoaded=accepted>0;
+  if(accepted)render();
+ }catch(e){/* Public learning feed remains available offline. */}
+ finally{clearTimeout(timer);}
+}
+const orbitRenderBeforeWork=render;
+render=function(){
+ orbitRenderBeforeWork();
+ if(state.view!=='feed'||!orbitWorkLoaded)return;
+ const work=CARDS.find(c=>c.id==='c10');
+ if(!work)return;
+ const hero=document.querySelector('.hero');
+ if(hero&&!document.querySelector('[data-work-card]')){
+  const action=document.createElement('button');
+  action.className='btn alt';action.dataset.workCard='1';
+  action.textContent='◈ 看一张真实工作机制图 →';
+  action.style.cssText='margin-top:15px';
+  hero.appendChild(action);
+ }
+ const card=CARDS[state.idx%CARDS.length];
+ if(card&&card.sourceLinks&&state.expanded.includes(card.id)){
+  const detail=document.querySelector('.detail');
+  if(detail&&!detail.querySelector('[data-work-sources]')){
+   const links=document.createElement('div');links.dataset.workSources='1';
+   links.style.cssText='display:flex;flex-wrap:wrap;gap:9px;margin-top:10px';
+   for(const source of card.sourceLinks){
+    const a=document.createElement('a');a.href=source.url;a.textContent=source.label+' ↗';
+    a.target='_blank';a.rel='noopener noreferrer';a.className='link';links.appendChild(a);
+   }
+   detail.appendChild(links);
+  }
+ }
+};
+document.addEventListener('click',e=>{
+ if(!e.target.closest('[data-work-card]'))return;
+ const idx=CARDS.findIndex(c=>c.id==='c10');
+ if(idx>=0)set({view:'feed',idx});
+});
+orbitLoadWork();
 </script>
 </body></html>
