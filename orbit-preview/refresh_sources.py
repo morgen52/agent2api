@@ -27,9 +27,9 @@ WEIGHTS = (
     ("reverse engineering", 6), ("tool generation", 7),
     ("reinforcement learning", 3), ("agent", 2), ("reasoning", 1),
 )
-ARXIV_ID = re.compile(r"^https?://(?:www\\.)?arxiv\\.org/abs/(\\d{4}\\.\\d{4,5})(?:v\\d+)?/?$")
+ARXIV_ID = re.compile(r"^https?://(?:www\.)?arxiv\.org/abs/(\d{4}\.\d{4,5})(?:v\d+)?/?$")
 TAG = re.compile(r"<[^>]*>")
-SPACE = re.compile(r"\\s+")
+SPACE = re.compile(r"\s+")
 
 def clean(value):
     return SPACE.sub(" ", html.unescape(TAG.sub(" ", value or ""))).strip()
@@ -80,7 +80,7 @@ def extract(xml):
 
 def merge(current, previous):
     merged = {row["id"]: row for row in previous if isinstance(row, dict)
-              and re.fullmatch(r"\\d{4}\\.\\d{4,5}", str(row.get("id", "")))}
+              and re.fullmatch(r"\d{4}\.\d{4,5}", str(row.get("id", "")))}
     for row in current:
         merged[row["id"]] = row
     return sorted(merged.values(), key=lambda r: (-r.get("score", 0), r["id"]), reverse=False)[:16]
@@ -110,7 +110,7 @@ def main():
     if old and old.get("papers") == papers:
         print("No content change; keeping existing checked_at to avoid unnecessary commits")
         return
-    OUT.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    OUT.write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Updated {OUT} with {len(papers)} papers")
 
 if __name__ == "__main__":
