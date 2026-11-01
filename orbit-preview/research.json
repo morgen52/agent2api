@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-11-01T04:50:00+00:00",
+  "origin": "arXiv official abstracts (manual seed; subsequent updates via arXiv RSS)",
+  "disclaimer": "论文线索，不是精读结论。标题/摘要来自公开一手页面；需阅读方法与实验后才能形成知识图卡。",
+  "papers": [
+    {
+      "id": "2608.25593",
+      "title": "JIT-Agent: Scaling Harness Intelligence via Just-in-Time Harness Evolution",
+      "url": "https://arxiv.org/abs/2608.25593",
+      "abstract_excerpt": "按任务即时生成由记忆、规划、动作与能力模块组成的 Harness；训练包含定制、修复、演化三个阶段。",
+      "relevance_terms": [
+        "harness",
+        "self-evolution"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2606.14249",
+      "title": "HarnessX: A Composable, Adaptive, and Evolvable Agent Harness Foundry",
+      "url": "https://arxiv.org/abs/2606.14249",
+      "abstract_excerpt": "提出可组合的 Harness 原语和基于执行轨迹的适配流程，并讨论 Harness 与模型联合演化。",
+      "relevance_terms": [
+        "harness",
+        "self-evolution"
+      ],
+      "score": 17,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2609.24974",
+      "title": "Harness-Zero: Harness Distillation via Agent-as-Harness",
+      "url": "https://arxiv.org/abs/2609.24974",
+      "abstract_excerpt": "训练期利用优化过的 Harness 引导并修正目标 Harness 的动作，目标是把专用 Harness 的行为迁移进模型。",
+      "relevance_terms": [
+        "harness",
+        "agentic rl"
+      ],
+      "score": 18,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.29458",
+      "title": "Harness Scaling for Generalizable Agentic Reinforcement Learning",
+      "url": "https://arxiv.org/abs/2610.29458",
+      "abstract_excerpt": "将 Harness 配置空间因子化，通过有覆盖性的训练配置和同任务跨 Harness 训练提升泛化。",
+      "relevance_terms": [
+        "harness",
+        "reinforcement learning"
+      ],
+      "score": 20,
+      "evidence_level": "unreviewed_metadata"
+    }
+  ]
+}
