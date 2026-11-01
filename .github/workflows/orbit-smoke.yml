@@ -5,6 +5,8 @@ on:
     paths:
       - "orbit-preview/index.html"
       - "orbit-preview/research.json"
+      - "orbit-preview/work_cards.json"
+      - "orbit-preview/test_work_cards.py"
       - "orbit-preview/check_live.py"
       - "orbit-preview/browser_smoke.py"
       - ".github/workflows/orbit-smoke.yml"
@@ -22,6 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Test exact-deploy verifier against stale HTML (offline)
         run: cd orbit-preview && python3 -m unittest -v test_check_live.py
+      - name: Validate public work-card provenance and privacy
+        run: cd orbit-preview && python3 -m unittest -v test_work_cards.py
       - name: Verify live HTTP content
         run: python3 orbit-preview/check_live.py
       - name: Install browser test dependencies
