@@ -144,4 +144,49 @@ document.addEventListener('click',e=>{
 },true);
 render();
 
-</script></body></html>
+</script>
+<script>
+'use strict';
+// Public, metadata-only discovery; never label automatic abstracts as verified insights.
+NAV.splice(1,0,['radar','⌁','研究雷达']);
+const ORBIT_RADAR_URL='https://raw.githubusercontent.com/morgen52/agent2api/orbit-preview-2026-11/orbit-preview/research.json';
+let radarData=null,radarLoading=false,radarError='';
+try{const cached=JSON.parse(localStorage.getItem('orbit-public-radar-cache-v1')||'null');if(cached?.papers?.length)radarData=cached;}catch(e){}
+async function loadRadar(force=false){
+ if(radarLoading)return;
+ radarLoading=true;radarError='';
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),12000);
+ try{
+  const resp=await fetch(ORBIT_RADAR_URL+'?hour='+Math.floor(Date.now()/3600000),{signal:ctrl.signal,cache:'no-store'});
+  if(!resp.ok)throw new Error('HTTP '+resp.status);
+  const obj=await resp.json();
+  if(!Array.isArray(obj.papers)||obj.papers.length===0)throw new Error('无有效论文元数据');
+  radarData={checked_at:obj.checked_at,papers:obj.papers.filter(x=>/^https:\/\/arxiv\.org\/abs\/\d{4}\.\d{4,5}$/.test(x.url)).slice(0,16)};
+  if(!radarData.papers.length)throw new Error('来源链接校验失败');
+  try{localStorage.setItem('orbit-public-radar-cache-v1',JSON.stringify(radarData));}catch(e){}
+ }catch(e){radarError='本次联网更新失败，'+(radarData?'显示上次缓存。':'暂时无法获取论文雷达。');}
+ finally{clearTimeout(timer);radarLoading=false;if(state.view==='radar')render();}
+}
+function radarPage(){
+ const rows=radarData?.papers||[];
+ const status=radarLoading?'正在检查 arXiv 公开来源…':radarError||'仅按标题与摘要筛选；尚未精读论文或核验实验。';
+ const date=radarData?.checked_at?new Date(radarData.checked_at).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'}):'尚未更新';
+ return header('最新研究线索，不冒充学会。','公开 arXiv 论文 → 关键词去重筛选 → 待核验候选。只有精读后才进入机制图卡。')
+  +'<div class="paper" style="border-color:#48766a"><div class="micro">SOURCE RADAR · 公开元数据</div><p class="muted">'+escapeHtml(status)+'</p><div class="actions"><button class="btn alt" data-radar-refresh="1">检查更新 ↻</button><span class="micro">数据时间：'+escapeHtml(date)+'</span></div></div>'
+  +(rows.length?rows.map((p,i)=>'<section class="paper" style="margin-top:13px"><div class="micro">线索 '+(i+1)+' / '+rows.length+' · 未精读 · arXiv:'+escapeHtml(p.id)+'</div><h3 style="margin:10px 0">'+escapeHtml(p.title)+'</h3><p class="muted">'+escapeHtml(p.abstract_excerpt||'暂无摘要片段')+'</p><p class="micro">相关词：'+escapeHtml((p.relevance_terms||[]).join(' · '))+'</p><div class="actions"><a class="btn alt" href="'+escapeHtml(p.url)+'" target="_blank" rel="noopener noreferrer">查看论文原文 ↗</a></div></section>').join(''):'<div class="paper"><p class="muted">尚无可展示的公开论文线索；已有的九张机制卡仍可离线阅读。</p></div>')
+  +'<p class="footnote">来源为公开论文元数据；相关性分数不是质量评价，论文作者的主张不是独立复现结论。自动雷达不读取你的聊天、私有仓库或浏览器记录。</p>';
+}
+const renderBeforeRadar=render;
+render=function(){
+ if(state.view!=='radar'){renderBeforeRadar();return;}
+ nav();document.getElementById('main').innerHTML=radarPage();
+ window.scrollTo({top:0,behavior:'instant'});
+ if(!radarData&&!radarLoading&&!radarError)loadRadar();
+};
+document.addEventListener('click',e=>{
+ if(!e.target.closest('[data-radar-refresh]'))return;
+ radarError='';loadRadar(true);render();
+},true);
+render();
+</script>
+</body></html>
