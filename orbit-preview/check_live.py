@@ -15,6 +15,7 @@ EXPECTED = (
     "Harness Scaling",
     "ORBIT_TRANSFER",
     "data-transfer-id",
+    "ORBIT_RADAR_URL",
 )
 
 def main():
