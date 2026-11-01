@@ -1,0 +1,18 @@
+name: ORBIT public endpoint smoke test
+on:
+  push:
+    branches: [orbit-preview-2026-11]
+    paths:
+      - "orbit-preview/**"
+      - ".github/workflows/orbit-smoke.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify live HTTP content
+        run: python3 orbit-preview/check_live.py
