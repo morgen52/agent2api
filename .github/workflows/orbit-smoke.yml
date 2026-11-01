@@ -3,11 +3,17 @@ on:
   push:
     branches: [orbit-preview-2026-11]
     paths:
-      - "orbit-preview/**"
+      - "orbit-preview/index.html"
+      - "orbit-preview/research.json"
+      - "orbit-preview/check_live.py"
+      - "orbit-preview/browser_smoke.py"
       - ".github/workflows/orbit-smoke.yml"
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: orbit-public-endpoint
+  cancel-in-progress: true
 jobs:
   smoke:
     runs-on: ubuntu-latest
