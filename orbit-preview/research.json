@@ -1,8 +1,21 @@
 {
-  "checked_at": "2026-11-01T04:56:31+00:00",
+  "checked_at": "2026-11-02T06:19:25+00:00",
   "origin": "arXiv official cs.AI/cs.LG RSS",
   "disclaimer": "自动关键词筛选，仅是论文线索；未精读、未核验方法和实验，不代表研究结论。",
   "papers": [
+    {
+      "id": "2610.40721",
+      "title": "MetaVul: Agentic Harness Discovery for Vulnerability Detection",
+      "url": "https://arxiv.org/abs/2610.40721",
+      "abstract_excerpt": "arXiv:2610.40721v1 Announce Type: cross Abstract: LLM agents are increasingly used to automate vulnerability detection, but reliable detection is challenging because agents must distinguish subtle, security-relevant fixes from benign code variation. While unde",
+      "relevance_terms": [
+        "harness",
+        "scaffold",
+        "agent"
+      ],
+      "score": 21,
+      "evidence_level": "unreviewed_metadata"
+    },
     {
       "id": "2610.29458",
       "title": "Harness Scaling for Generalizable Agentic Reinforcement Learning",
@@ -28,6 +41,19 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
+      "id": "2610.40747",
+      "title": "Mage-VL-Cowork: A Full Training Recipe to Learn Hybrid Computer Use From Evolved Harnesses",
+      "url": "https://arxiv.org/abs/2610.40747",
+      "abstract_excerpt": "arXiv:2610.40747v1 Announce Type: cross Abstract: Effective computer-use agents (CUAs) should seamlessly combine visual GUI interaction with code and terminal execution within a single policy. We present Mage-VL-Cowork, a 4B hybrid CUA trained from a general m",
+      "relevance_terms": [
+        "harness",
+        "computer use",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
       "id": "2609.24974",
       "title": "Harness-Zero: Harness Distillation via Agent-as-Harness",
       "url": "https://arxiv.org/abs/2609.24974",
@@ -35,6 +61,19 @@
       "relevance_terms": [
         "harness",
         "agentic rl"
+      ],
+      "score": 18,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.40751",
+      "title": "Safin-1.5: Safety-Native Architecture and Verifiable Reasoning for Recursive Safety Improvement",
+      "url": "https://arxiv.org/abs/2610.40751",
+      "abstract_excerpt": "arXiv:2610.40751v1 Announce Type: cross Abstract: Recursive self-improvement (RSI) enables large language models to advance their capabilities through successive updates, but these updates can also introduce new risks and weaken existing safeguards. In line wi",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "reasoning"
       ],
       "score": 18,
       "evidence_level": "unreviewed_metadata"
@@ -49,6 +88,117 @@
         "self-evolution"
       ],
       "score": 17,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2604.11811",
+      "title": "M$^\\star$: Every Task Deserves Its Own Memory Harness",
+      "url": "https://arxiv.org/abs/2604.11811",
+      "abstract_excerpt": "arXiv:2604.11811v3 Announce Type: replace-cross Abstract: Large language model agents rely on a memory harness to write, organize, retrieve, and use past experience. A harness that works for one task often fails on another, because conversations, embodied plan",
+      "relevance_terms": [
+        "harness",
+        "agent",
+        "reasoning"
+      ],
+      "score": 13,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.35962",
+      "title": "h1: A Taste of the Bitter Lesson in Automated Theorem Proving",
+      "url": "https://arxiv.org/abs/2610.35962",
+      "abstract_excerpt": "arXiv:2610.35962v2 Announce Type: replace Abstract: While progress in informal mathematics has come largely from scaling the chain-of-thought and agentic reasoning of frontier language models, formal theorem proving has increasingly relied on human-designed wo",
+      "relevance_terms": [
+        "harness",
+        "agent",
+        "reasoning"
+      ],
+      "score": 13,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.41350",
+      "title": "Operon-S1: a fast decision controller for long-horizon biomedical agents",
+      "url": "https://arxiv.org/abs/2610.41350",
+      "abstract_excerpt": "arXiv:2610.41350v1 Announce Type: cross Abstract: Language-model agents now carry out long scientific work in biology, but their judgements about conventions, skills, errors, evidence and stopping are made inside the reasoning that does the work, where they ca",
+      "relevance_terms": [
+        "harness",
+        "agent",
+        "reasoning"
+      ],
+      "score": 13,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.41359",
+      "title": "LEAP: Efficient LLM Inference Scheduling with Generalizable Length Prediction",
+      "url": "https://arxiv.org/abs/2610.41359",
+      "abstract_excerpt": "arXiv:2610.41359v1 Announce Type: new Abstract: Length-aware scheduling reduces request latency in LLM serving by prioritizing shorter requests. However, despite their large model sizes, length predictors can suffer degraded ranking performance under domain an",
+      "relevance_terms": [
+        "llm serving",
+        "inference scheduling"
+      ],
+      "score": 13,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.35835",
+      "title": "I-HITL: Inalienable Human-in-the-Loop",
+      "url": "https://arxiv.org/abs/2610.35835",
+      "abstract_excerpt": "arXiv:2610.35835v3 Announce Type: replace-cross Abstract: Human oversight is a pillar of AI safety. It is often exercised by a human in the loop (HITL) who approves critical actions taken by an AI agent. AI agents' increasing ability to bypass guardrails, thou",
+      "relevance_terms": [
+        "harness",
+        "agent"
+      ],
+      "score": 12,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.40917",
+      "title": "Towards Portable Specification of the Agent Harness",
+      "url": "https://arxiv.org/abs/2610.40917",
+      "abstract_excerpt": "arXiv:2610.40917v1 Announce Type: new Abstract: Large language models act only through the infrastructure that surrounds them. That infrastructure, the harness, determines what a model can accomplish and how it fails, yet it has no settled definition. To addre",
+      "relevance_terms": [
+        "harness",
+        "agent"
+      ],
+      "score": 12,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.41172",
+      "title": "Context as Infrastructure: Knowledge Compilation for Retrieval in Agentic Systems with Harnesses",
+      "url": "https://arxiv.org/abs/2610.41172",
+      "abstract_excerpt": "arXiv:2610.41172v1 Announce Type: cross Abstract: Retrieval-augmented generation is becoming agentic. A search harness writes queries, reads results, reformulates, and decides when to stop. This largely solves accuracy: a harness with only BM25/grep and MiniMa",
+      "relevance_terms": [
+        "harness",
+        "agent"
+      ],
+      "score": 12,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.41264",
+      "title": "Rome Wasn't Built in One Turn: Replay-Grounded Reward Signals for Long-Horizon Freeciv Agents",
+      "url": "https://arxiv.org/abs/2610.41264",
+      "abstract_excerpt": "arXiv:2610.41264v1 Announce Type: new Abstract: Training language-model agents to play long-horizon strategy games is hard because deterministic feedback is sparse and often arrives only at the end of a game. In-game scores can offer dense signals, but they do",
+      "relevance_terms": [
+        "harness",
+        "agent"
+      ],
+      "score": 12,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.42141",
+      "title": "RoboArchitect: Automating the Design of Robotic Agents with Persistent Memory",
+      "url": "https://arxiv.org/abs/2610.42141",
+      "abstract_excerpt": "arXiv:2610.42141v1 Announce Type: cross Abstract: Recent work shows that a frozen robot policy performs far better inside an agent harness, where control code decides when to query the policy, consult vision tools, or command the arm directly. Yet today these ",
+      "relevance_terms": [
+        "harness",
+        "agent"
+      ],
+      "score": 12,
       "evidence_level": "unreviewed_metadata"
     }
   ]
