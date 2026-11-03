@@ -1,8 +1,47 @@
 {
-  "checked_at": "2026-11-02T06:19:25+00:00",
+  "checked_at": "2026-11-03T19:33:07+00:00",
   "origin": "arXiv official cs.AI/cs.LG RSS",
   "disclaimer": "自动关键词筛选，仅是论文线索；未精读、未核验方法和实验，不代表研究结论。",
   "papers": [
+    {
+      "id": "2610.21791",
+      "title": "RSIFlow: Adaptive Self-Improvement Workflows with an Evolving Meta-Agent",
+      "url": "https://arxiv.org/abs/2610.21791",
+      "abstract_excerpt": "arXiv:2610.21791v2 Announce Type: replace Abstract: Large language model (LLM) agents have demonstrated strong capabilities in complex tasks, including code generation, tool use, and multi-hop question answering. Existing self-improvement methods enhance agent",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "tool use"
+      ],
+      "score": 24,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.08430",
+      "title": "NeMo-DCR: Bit-Exact Delta-Compressed Refit for Scalable Agentic RL at Trillion-Parameter Scale",
+      "url": "https://arxiv.org/abs/2610.08430",
+      "abstract_excerpt": "arXiv:2610.08430v2 Announce Type: replace-cross Abstract: Agentic reinforcement learning (RL) disaggregates training from rollout into different clusters, so each policy update must reach rollout clusters before the next batch: a full 1T checkpoint takes 87.5 ",
+      "relevance_terms": [
+        "agentic reinforcement learning",
+        "agentic rl",
+        "reinforcement learning"
+      ],
+      "score": 23,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2610.39711",
+      "title": "Sandman: A Sandbox Service for Production Agentic Reinforcement Learning",
+      "url": "https://arxiv.org/abs/2610.39711",
+      "abstract_excerpt": "arXiv:2610.39711v2 Announce Type: replace-cross Abstract: Agentic reinforcement learning (RL) needs stateful environments for tool execution and evaluation. Training jobs request thousands of environments in bursts that can overwhelm shared cluster services, w",
+      "relevance_terms": [
+        "agentic reinforcement learning",
+        "agentic rl",
+        "reinforcement learning"
+      ],
+      "score": 23,
+      "evidence_level": "unreviewed_metadata"
+    },
     {
       "id": "2610.40721",
       "title": "MetaVul: Agentic Harness Discovery for Vulnerability Detection",
@@ -29,6 +68,19 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
+      "id": "2606.01770",
+      "title": "Adaptive Auto-Harness: Sustained Self-Improvement for Agentic System Deployment on Open-Ended Task Streams",
+      "url": "https://arxiv.org/abs/2606.01770",
+      "abstract_excerpt": "arXiv:2606.01770v3 Announce Type: replace Abstract: Auto-harness systems improve LLM agents by adapting prompts, skills, tools, and supporting infrastructure from execution feedback. Sustaining these gains on open-ended task streams requires handling growing h",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
       "id": "2608.25593",
       "title": "JIT-Agent: Scaling Harness Intelligence via Just-in-Time Harness Evolution",
       "url": "https://arxiv.org/abs/2608.25593",
@@ -41,6 +93,19 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
+      "id": "2610.36077",
+      "title": "The Trinity: Capability-Driven Recursive Self-Improvement for Multimodal Agents",
+      "url": "https://arxiv.org/abs/2610.36077",
+      "abstract_excerpt": "arXiv:2610.36077v2 Announce Type: replace Abstract: Multimodal intelligence can be viewed as human-guided co-evolution between worlds and agents through interaction. However, scaling this process faces two bottlenecks: constructing heterogeneous, verifiable en",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
       "id": "2610.40747",
       "title": "Mage-VL-Cowork: A Full Training Recipe to Learn Hybrid Computer Use From Evolved Harnesses",
       "url": "https://arxiv.org/abs/2610.40747",
@@ -48,6 +113,45 @@
       "relevance_terms": [
         "harness",
         "computer use",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2611.02102",
+      "title": "NorthCUA Technical Report: Turbocharging Computer-Use Agents through Experience at Scale",
+      "url": "https://arxiv.org/abs/2611.02102",
+      "abstract_excerpt": "arXiv:2611.02102v1 Announce Type: new Abstract: Scaling computer-use agents from individual actions to complex software work requires experience that connects decisions to complete outcomes. We present NorthCUA, an integrated system for turbocharging computer-",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2611.02839",
+      "title": "CARE: Grounded Recursive Self-Improvement for Production Customer-Service Agents",
+      "url": "https://arxiv.org/abs/2611.02839",
+      "abstract_excerpt": "arXiv:2611.02839v1 Announce Type: new Abstract: Recursive self-improvement (RSI) in production agents involves transforming accumulated experience into reliable model updates while adapting to evolving business policies. We present CARE (Customer-service Agent",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2611.03219",
+      "title": "Can Coding Agents Sustain Continual Evolution without Forgetting?",
+      "url": "https://arxiv.org/abs/2611.03219",
+      "abstract_excerpt": "arXiv:2611.03219v1 Announce Type: cross Abstract: Recently, harness self-evolution has emerged as an important paradigm for improving agent performance. Prior studies show that evolving the agent harness can effectively enhance agent capabilities without modif",
+      "relevance_terms": [
+        "harness",
+        "self-evolution",
         "agent"
       ],
       "score": 19,
@@ -91,114 +195,16 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
-      "id": "2604.11811",
-      "title": "M$^\\star$: Every Task Deserves Its Own Memory Harness",
-      "url": "https://arxiv.org/abs/2604.11811",
-      "abstract_excerpt": "arXiv:2604.11811v3 Announce Type: replace-cross Abstract: Large language model agents rely on a memory harness to write, organize, retrieve, and use past experience. A harness that works for one task often fails on another, because conversations, embodied plan",
+      "id": "2611.00138",
+      "title": "Kerkoporta: Injecting Structured-Output Backdoors in Reasoning Coding Agents",
+      "url": "https://arxiv.org/abs/2611.00138",
+      "abstract_excerpt": "arXiv:2611.00138v1 Announce Type: cross Abstract: Existing large language model (LLM) backdoor attacks operate primarily in chat settings, where the risk is bounded by free-form text outputs. AI agents remove that bound by performing actions and executing comm",
       "relevance_terms": [
         "harness",
-        "agent",
-        "reasoning"
-      ],
-      "score": 13,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.35962",
-      "title": "h1: A Taste of the Bitter Lesson in Automated Theorem Proving",
-      "url": "https://arxiv.org/abs/2610.35962",
-      "abstract_excerpt": "arXiv:2610.35962v2 Announce Type: replace Abstract: While progress in informal mathematics has come largely from scaling the chain-of-thought and agentic reasoning of frontier language models, formal theorem proving has increasingly relied on human-designed wo",
-      "relevance_terms": [
-        "harness",
-        "agent",
-        "reasoning"
-      ],
-      "score": 13,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.41350",
-      "title": "Operon-S1: a fast decision controller for long-horizon biomedical agents",
-      "url": "https://arxiv.org/abs/2610.41350",
-      "abstract_excerpt": "arXiv:2610.41350v1 Announce Type: cross Abstract: Language-model agents now carry out long scientific work in biology, but their judgements about conventions, skills, errors, evidence and stopping are made inside the reasoning that does the work, where they ca",
-      "relevance_terms": [
-        "harness",
-        "agent",
-        "reasoning"
-      ],
-      "score": 13,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.41359",
-      "title": "LEAP: Efficient LLM Inference Scheduling with Generalizable Length Prediction",
-      "url": "https://arxiv.org/abs/2610.41359",
-      "abstract_excerpt": "arXiv:2610.41359v1 Announce Type: new Abstract: Length-aware scheduling reduces request latency in LLM serving by prioritizing shorter requests. However, despite their large model sizes, length predictors can suffer degraded ranking performance under domain an",
-      "relevance_terms": [
-        "llm serving",
-        "inference scheduling"
-      ],
-      "score": 13,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.35835",
-      "title": "I-HITL: Inalienable Human-in-the-Loop",
-      "url": "https://arxiv.org/abs/2610.35835",
-      "abstract_excerpt": "arXiv:2610.35835v3 Announce Type: replace-cross Abstract: Human oversight is a pillar of AI safety. It is often exercised by a human in the loop (HITL) who approves critical actions taken by an AI agent. AI agents' increasing ability to bypass guardrails, thou",
-      "relevance_terms": [
-        "harness",
+        "reinforcement learning",
         "agent"
       ],
-      "score": 12,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.40917",
-      "title": "Towards Portable Specification of the Agent Harness",
-      "url": "https://arxiv.org/abs/2610.40917",
-      "abstract_excerpt": "arXiv:2610.40917v1 Announce Type: new Abstract: Large language models act only through the infrastructure that surrounds them. That infrastructure, the harness, determines what a model can accomplish and how it fails, yet it has no settled definition. To addre",
-      "relevance_terms": [
-        "harness",
-        "agent"
-      ],
-      "score": 12,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.41172",
-      "title": "Context as Infrastructure: Knowledge Compilation for Retrieval in Agentic Systems with Harnesses",
-      "url": "https://arxiv.org/abs/2610.41172",
-      "abstract_excerpt": "arXiv:2610.41172v1 Announce Type: cross Abstract: Retrieval-augmented generation is becoming agentic. A search harness writes queries, reads results, reformulates, and decides when to stop. This largely solves accuracy: a harness with only BM25/grep and MiniMa",
-      "relevance_terms": [
-        "harness",
-        "agent"
-      ],
-      "score": 12,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.41264",
-      "title": "Rome Wasn't Built in One Turn: Replay-Grounded Reward Signals for Long-Horizon Freeciv Agents",
-      "url": "https://arxiv.org/abs/2610.41264",
-      "abstract_excerpt": "arXiv:2610.41264v1 Announce Type: new Abstract: Training language-model agents to play long-horizon strategy games is hard because deterministic feedback is sparse and often arrives only at the end of a game. In-game scores can offer dense signals, but they do",
-      "relevance_terms": [
-        "harness",
-        "agent"
-      ],
-      "score": 12,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.42141",
-      "title": "RoboArchitect: Automating the Design of Robotic Agents with Persistent Memory",
-      "url": "https://arxiv.org/abs/2610.42141",
-      "abstract_excerpt": "arXiv:2610.42141v1 Announce Type: cross Abstract: Recent work shows that a frozen robot policy performs far better inside an agent harness, where control code decides when to query the policy, consult vision tools, or command the arm directly. Yet today these ",
-      "relevance_terms": [
-        "harness",
-        "agent"
-      ],
-      "score": 12,
+      "score": 16,
       "evidence_level": "unreviewed_metadata"
     }
   ]
