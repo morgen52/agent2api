@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-04T06:36:36+00:00",
+  "checked_at": "2026-11-19T07:34:04+00:00",
   "origin": "arXiv official cs.AI/cs.LG RSS",
   "disclaimer": "自动关键词筛选，仅是论文线索；未精读、未核验方法和实验，不代表研究结论。",
   "papers": [
@@ -171,6 +171,32 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
+      "id": "2611.23476",
+      "title": "GUARD: Stabilizing Recursive Self-Improvement with Regret Guidance",
+      "url": "https://arxiv.org/abs/2611.23476",
+      "abstract_excerpt": "arXiv:2611.23476v1 Announce Type: cross Abstract: Autonomous AI agents pair a frozen base model with an editable harness of prompts, skills, tool rules, and memory. Recursive self-improvement (RSI) adapts this harness from experience without weight updates, ye",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2611.24651",
+      "title": "Piccolo: Co-Evolving Decision Models and Data through Recursive Self-Improvement",
+      "url": "https://arxiv.org/abs/2611.24651",
+      "abstract_excerpt": "arXiv:2611.24651v1 Announce Type: cross Abstract: We present Piccolo, a family of multimodal decision models (0.8B to 27B) that coevolves model capabilities and training data via Agentic Data Engineering and recursive self-improvement (RSI). The models predict",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
       "id": "2609.24974",
       "title": "Harness-Zero: Harness Distillation via Agent-as-Harness",
       "url": "https://arxiv.org/abs/2609.24974",
@@ -180,31 +206,6 @@
         "agentic rl"
       ],
       "score": 18,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2610.40751",
-      "title": "Safin-1.5: Safety-Native Architecture and Verifiable Reasoning for Recursive Safety Improvement",
-      "url": "https://arxiv.org/abs/2610.40751",
-      "abstract_excerpt": "arXiv:2610.40751v1 Announce Type: cross Abstract: Recursive self-improvement (RSI) enables large language models to advance their capabilities through successive updates, but these updates can also introduce new risks and weaken existing safeguards. In line wi",
-      "relevance_terms": [
-        "harness",
-        "self-improvement",
-        "reasoning"
-      ],
-      "score": 18,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2606.14249",
-      "title": "HarnessX: A Composable, Adaptive, and Evolvable Agent Harness Foundry",
-      "url": "https://arxiv.org/abs/2606.14249",
-      "abstract_excerpt": "提出可组合的 Harness 原语和基于执行轨迹的适配流程，并讨论 Harness 与模型联合演化。",
-      "relevance_terms": [
-        "harness",
-        "self-evolution"
-      ],
-      "score": 17,
       "evidence_level": "unreviewed_metadata"
     }
   ]
