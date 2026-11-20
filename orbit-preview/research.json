@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-19T07:34:04+00:00",
+  "checked_at": "2026-11-20T07:25:36+00:00",
   "origin": "arXiv official cs.AI/cs.LG RSS",
   "disclaimer": "自动关键词筛选，仅是论文线索；未精读、未核验方法和实验，不代表研究结论。",
   "papers": [
@@ -14,6 +14,19 @@
         "tool use"
       ],
       "score": 24,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2608.10090",
+      "title": "CHORUS: Coverage-Guided Agentic RL and Policy Consolidation for Testbench Stimulus Generation",
+      "url": "https://arxiv.org/abs/2608.10090",
+      "abstract_excerpt": "arXiv:2608.10090v2 Announce Type: replace-cross Abstract: Testbenches written by large language models can compile and run while leaving entire datapaths idle. We present CHORUS, the first framework to combine coverage-guided agentic reinforcement learning (RL",
+      "relevance_terms": [
+        "agentic reinforcement learning",
+        "agentic rl",
+        "reinforcement learning"
+      ],
+      "score": 23,
       "evidence_level": "unreviewed_metadata"
     },
     {
@@ -37,6 +50,19 @@
       "relevance_terms": [
         "agentic reinforcement learning",
         "agentic rl",
+        "reinforcement learning"
+      ],
+      "score": 23,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
+      "id": "2611.25380",
+      "title": "Beyond Weight Updates: Evolving Agent Harnesses for Domain Specialization",
+      "url": "https://arxiv.org/abs/2611.25380",
+      "abstract_excerpt": "arXiv:2611.25380v1 Announce Type: new Abstract: Domain specialization of LLM agents is usually framed as a weight-update problem: collect trajectories, run reinforcement learning (RL) or supervised fine-tuning (SFT), and deploy a new checkpoint. We study a com",
+      "relevance_terms": [
+        "harness",
+        "scaffold",
         "reinforcement learning"
       ],
       "score": 23,
@@ -181,31 +207,6 @@
         "agent"
       ],
       "score": 19,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2611.24651",
-      "title": "Piccolo: Co-Evolving Decision Models and Data through Recursive Self-Improvement",
-      "url": "https://arxiv.org/abs/2611.24651",
-      "abstract_excerpt": "arXiv:2611.24651v1 Announce Type: cross Abstract: We present Piccolo, a family of multimodal decision models (0.8B to 27B) that coevolves model capabilities and training data via Agentic Data Engineering and recursive self-improvement (RSI). The models predict",
-      "relevance_terms": [
-        "harness",
-        "self-improvement",
-        "agent"
-      ],
-      "score": 19,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2609.24974",
-      "title": "Harness-Zero: Harness Distillation via Agent-as-Harness",
-      "url": "https://arxiv.org/abs/2609.24974",
-      "abstract_excerpt": "训练期利用优化过的 Harness 引导并修正目标 Harness 的动作，目标是把专用 Harness 的行为迁移进模型。",
-      "relevance_terms": [
-        "harness",
-        "agentic rl"
-      ],
-      "score": 18,
       "evidence_level": "unreviewed_metadata"
     }
   ]
