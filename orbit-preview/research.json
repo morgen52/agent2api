@@ -1,8 +1,21 @@
 {
-  "checked_at": "2026-11-20T07:25:36+00:00",
+  "checked_at": "2026-11-23T07:49:36+00:00",
   "origin": "arXiv official cs.AI/cs.LG RSS",
   "disclaimer": "自动关键词筛选，仅是论文线索；未精读、未核验方法和实验，不代表研究结论。",
   "papers": [
+    {
+      "id": "2606.12318",
+      "title": "Chain of Operators: An Inference-Time Harness for In-Context Operator Learning",
+      "url": "https://arxiv.org/abs/2606.12318",
+      "abstract_excerpt": "arXiv:2606.12318v3 Announce Type: replace Abstract: While scientific foundation models show immense promise in accelerating physical simulations and numerical forecasting, they remain notoriously brittle when encountering out-of-distribution (OOD) scenarios. A",
+      "relevance_terms": [
+        "harness",
+        "scaffold",
+        "tool use"
+      ],
+      "score": 24,
+      "evidence_level": "unreviewed_metadata"
+    },
     {
       "id": "2610.21791",
       "title": "RSIFlow: Adaptive Self-Improvement Workflows with an Evolving Meta-Agent",
@@ -119,6 +132,19 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
+      "id": "2609.38372",
+      "title": "Multi-Task Self-Evolving Harnesses with the Agent as Its Own Optimizer",
+      "url": "https://arxiv.org/abs/2609.38372",
+      "abstract_excerpt": "arXiv:2609.38372v3 Announce Type: replace-cross Abstract: A harness is the code around a language model agent that organizes prompts, calls tools, manages context, and controls execution. As models grow stronger, recent work has begun to let agents improve the",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 19,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
       "id": "2610.36077",
       "title": "The Trinity: Capability-Driven Recursive Self-Improvement for Multimodal Agents",
       "url": "https://arxiv.org/abs/2610.36077",
@@ -178,32 +204,6 @@
       "relevance_terms": [
         "harness",
         "self-evolution",
-        "agent"
-      ],
-      "score": 19,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2611.03698",
-      "title": "Training LLM Agents to Automate LLM Post-Training with RSI-Dojo",
-      "url": "https://arxiv.org/abs/2611.03698",
-      "abstract_excerpt": "arXiv:2611.03698v1 Announce Type: new Abstract: Recursive Self-Improvement (RSI) aims to enable AI systems to autonomously build and improve AI systems themselves, including models, harnesses, and underlying infrastructure. Within this broader agenda, a centra",
-      "relevance_terms": [
-        "harness",
-        "self-improvement",
-        "agent"
-      ],
-      "score": 19,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2611.23476",
-      "title": "GUARD: Stabilizing Recursive Self-Improvement with Regret Guidance",
-      "url": "https://arxiv.org/abs/2611.23476",
-      "abstract_excerpt": "arXiv:2611.23476v1 Announce Type: cross Abstract: Autonomous AI agents pair a frozen base model with an editable harness of prompts, skills, tool rules, and memory. Recursive self-improvement (RSI) adapts this harness from experience without weight updates, ye",
-      "relevance_terms": [
-        "harness",
-        "self-improvement",
         "agent"
       ],
       "score": 19,
