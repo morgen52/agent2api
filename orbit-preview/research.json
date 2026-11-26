@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-23T07:49:36+00:00",
+  "checked_at": "2026-11-26T08:30:53+00:00",
   "origin": "arXiv official cs.AI/cs.LG RSS",
   "disclaimer": "自动关键词筛选，仅是论文线索；未精读、未核验方法和实验，不代表研究结论。",
   "papers": [
@@ -107,6 +107,19 @@
       "evidence_level": "unreviewed_metadata"
     },
     {
+      "id": "2611.34675",
+      "title": "RoboEvo$^2$: Recursive Robot Self-Improvement via Harness-Policy Co-Evolution",
+      "url": "https://arxiv.org/abs/2611.34675",
+      "abstract_excerpt": "arXiv:2611.34675v1 Announce Type: cross Abstract: Robots should adapt to unfamiliar environments and acquire new skills through interaction, then execute those skills efficiently with practice. Vision-language-action policies provide efficient control, but oft",
+      "relevance_terms": [
+        "harness",
+        "self-improvement",
+        "agent"
+      ],
+      "score": 20,
+      "evidence_level": "unreviewed_metadata"
+    },
+    {
       "id": "2606.01770",
       "title": "Adaptive Auto-Harness: Sustained Self-Improvement for Agentic System Deployment on Open-Ended Task Streams",
       "url": "https://arxiv.org/abs/2606.01770",
@@ -191,19 +204,6 @@
       "relevance_terms": [
         "harness",
         "self-improvement",
-        "agent"
-      ],
-      "score": 19,
-      "evidence_level": "unreviewed_metadata"
-    },
-    {
-      "id": "2611.03219",
-      "title": "Can Coding Agents Sustain Continual Evolution without Forgetting?",
-      "url": "https://arxiv.org/abs/2611.03219",
-      "abstract_excerpt": "arXiv:2611.03219v1 Announce Type: cross Abstract: Recently, harness self-evolution has emerged as an important paradigm for improving agent performance. Prior studies show that evolving the agent harness can effectively enhance agent capabilities without modif",
-      "relevance_terms": [
-        "harness",
-        "self-evolution",
         "agent"
       ],
       "score": 19,
